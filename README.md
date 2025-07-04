@@ -9,7 +9,7 @@ Desarrollado con **Java + Spring Boot +  Spring Security + JWT + Gradle**, integ
 
 - **CRUD completo de contraseñas**
     - Crear, ver, editar y eliminar contraseñas
-    - Cada contraseña puede tener: usuario, URL, valor cifrado, y nota opcional
+    - Cada contraseña puede tener: usuario, URL, contraseña, y nota opcional
 
 - **Gestión de notas privadas cifradas**
     - Almacenamiento seguro de notas con cifrado híbrido de extremo a extremo
@@ -43,5 +43,6 @@ Desarrollado con **Java + Spring Boot +  Spring Security + JWT + Gradle**, integ
 - Manejo centralizado de errores y respuestas
 -   Separación entre cifrado en tránsito y en reposo
 - Claves derivadas por usuario para persistencia cifrada
+- Acceso a todas las contraseñas mediante clave maestra unica
 
 ---
