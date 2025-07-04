@@ -9,7 +9,7 @@ COPY . .
 RUN gradle build -x test
 
 #Etapa de ejecución
-FROM eclipse-temurin:17-jdk-alpine
+FROM arm64v8/eclipse-temurin:17-jdk
 
 WORKDIR /app
 COPY --from=builder /app/build/libs/*.jar app.jar
