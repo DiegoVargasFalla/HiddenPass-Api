@@ -1,5 +1,5 @@
 # Etapa de build
-FROM gradle:8.2.1-jdk17 AS builder
+FROM gradle:8.5-jdk17 AS builder
 
 USER root
 WORKDIR /app
