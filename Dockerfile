@@ -1,12 +1,13 @@
 # Etapa de build
 FROM gradle:8.2.1-jdk17 AS builder
 
+USER root
+
 WORKDIR /app
 
 COPY . .
 
-#Contruir el .jar sin ejecutar test
-RUN chmod +x ./gradle
+#Contruir el .jar sin ejecutar tes
 RUN gradle build -x test
 
 #Etapa de ejecución
