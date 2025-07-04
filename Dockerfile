@@ -2,20 +2,23 @@
 FROM gradle:8.2.1-jdk17 AS builder
 
 USER root
-
 WORKDIR /app
 
+# Copiamos el proyecto completo
 COPY . .
 
-#Contruir el .jar sin ejecutar tes
-RUN gradle --no-daemon --refresh-dependencies build -x test
+# Construir el .jar sin ejecutar los tests
+RUN gradle --no-daemon clean build -x test
 
-#Etapa de ejecución
+# Etapa de ejecución (imagen más liviana)
 FROM arm64v8/eclipse-temurin:17-jdk
 
 WORKDIR /app
 
-COPY --from=builder /app/build/libs/*.jar app.jar
+# Copiar solo el .jar generado
+COPY --from=builder /app/build/libs/app.jar app.jar
 
 EXPOSE 8080
+
+# Ejecutar la aplicación
 CMD ["java", "-jar", "app.jar"]
