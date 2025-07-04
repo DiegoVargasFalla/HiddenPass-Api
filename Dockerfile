@@ -8,7 +8,7 @@ WORKDIR /app
 COPY . .
 
 #Contruir el .jar sin ejecutar tes
-RUN gradle build -x test
+RUN gradle --no-daemon --refresh-dependencies build -x test
 
 #Etapa de ejecución
 FROM arm64v8/eclipse-temurin:17-jdk
