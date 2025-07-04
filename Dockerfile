@@ -6,6 +6,7 @@ WORKDIR /app
 COPY . .
 
 #Contruir el .jar sin ejecutar test
+RUN chmod +x ./gradle
 RUN gradle build -x test
 
 #Etapa de ejecución
