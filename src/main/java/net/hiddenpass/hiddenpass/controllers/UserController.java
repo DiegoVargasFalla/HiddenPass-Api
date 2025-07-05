@@ -125,7 +125,7 @@ public class UserController {
     }
 
     @GetMapping("/pk")
-    //@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<String> getPublicKey() throws Exception {
         return ResponseEntity.status(HttpStatus.OK).body(keyStoreService.getPublicKey());
     }

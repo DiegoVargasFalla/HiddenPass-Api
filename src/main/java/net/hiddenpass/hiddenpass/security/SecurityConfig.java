@@ -42,7 +42,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         authorizeRequests -> authorizeRequests
-                                .requestMatchers("/v1/create", "/v1/checkmail", "/v1/pk").permitAll()
+                                .requestMatchers("/v1/create", "/v1/checkmail").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .headers(header -> header.contentSecurityPolicy(csp -> csp
