@@ -21,4 +21,4 @@ COPY --from=builder /app/build/libs/app.jar app.jar
 EXPOSE 8080
 
 # Ejecutar la aplicación
-CMD ["sh", "-c", "until nc -z db 3306; do sleep 1; done && java -jar app.jar"]
+CMD ["java", "-jar", "app.jar"]
