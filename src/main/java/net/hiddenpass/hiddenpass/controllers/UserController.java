@@ -45,7 +45,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUser(email));
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<String> registerUser(@Valid @RequestBody UserEntity user) {
         if (userService.createUser(user).isPresent()) {
             throw new IllegalArgumentException("User already exists");
