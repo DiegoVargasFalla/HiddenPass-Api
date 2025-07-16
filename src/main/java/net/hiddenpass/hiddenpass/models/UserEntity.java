@@ -18,7 +18,6 @@ public class UserEntity{
 
     private String name;
 
-    @Email
     @Column(unique = true, nullable = false)
     private String username;
 

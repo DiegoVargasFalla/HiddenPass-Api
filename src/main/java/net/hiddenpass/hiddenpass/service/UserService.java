@@ -12,7 +12,7 @@ public interface UserService {
 
     List<UserEntity> getUsers();
     Optional<UserEntity> getUser(String email);
-    Optional<UserEntity> createUser(UserEntity user);
+    Optional<UserEntity> createUser(UserEntity user) throws Exception;
     Optional<UserEntity> updateUser(UserEntity user);
     boolean deleteUser(String email);
     boolean deleteIdPassword(Long id, String emailUser);

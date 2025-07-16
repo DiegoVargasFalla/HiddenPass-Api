@@ -46,7 +46,7 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<String> registerUser(@Valid @RequestBody UserEntity user) {
+    public ResponseEntity<String> registerUser(@Valid @RequestBody UserEntity user) throws Exception {
         if (userService.createUser(user).isPresent()) {
             throw new IllegalArgumentException("User already exists");
         }
@@ -56,7 +56,7 @@ public class UserController {
     //This endpoint only access to rol [USER, ADMIN].
     @PatchMapping("/update-user")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<Optional<UserEntity>> updateUser(@Valid @RequestBody UserEntity user) {
+    public ResponseEntity<Optional<UserEntity>> updateUser( @RequestBody UserEntity user) {
 
         Optional<UserEntity> userEntity = this.userService.updateUser(user);
 
@@ -125,8 +125,8 @@ public class UserController {
     }
 
     @GetMapping("/pk")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<String> getPublicKey() throws Exception {
+        //    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
         return ResponseEntity.status(HttpStatus.OK).body(keyStoreService.getPublicKey());
     }
 }

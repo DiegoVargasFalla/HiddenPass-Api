@@ -89,6 +89,15 @@ public class KeyStoreServiceImpl implements KeyStoreService {
     }
 
     @Override
+    public String decryptDataWithRSA(byte[] data) throws Exception {
+        Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA-256AndMGF1Padding");
+        OAEPParameterSpec oaepParameterSpec = new OAEPParameterSpec("SHA-256", "MGF1", MGF1ParameterSpec.SHA256, PSource.PSpecified.DEFAULT);
+        cipher.init(Cipher.DECRYPT_MODE, keyPair.getPrivate(), oaepParameterSpec);
+
+        return new String(cipher.doFinal(data), StandardCharsets.UTF_8);
+    }
+
+    @Override
     public byte[] exportBase64ToArray(String value) throws Exception {
         return Base64.getDecoder().decode(value);
     }

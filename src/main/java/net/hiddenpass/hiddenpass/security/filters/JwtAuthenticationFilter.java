@@ -38,7 +38,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-
+        // #######  modify the access with encryption for username and password #####
         UserEntity userEntity = parseUserEntity(request);
         String email = userEntity.getUsername();
         String masterKey = userEntity.getPassword();

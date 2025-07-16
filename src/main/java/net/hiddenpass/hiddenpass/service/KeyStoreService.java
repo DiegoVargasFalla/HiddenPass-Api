@@ -14,4 +14,5 @@ public interface KeyStoreService {
     byte[] exportBase64ToArray(String value) throws Exception;
     NoteEntityDTO decryptAllDataNote(NoteEntityDTO noteDTO) throws Exception;
     PasswordEntityDTO decryptAllDataPassword(PasswordEntityDTO passwordDTO) throws Exception;
+    String decryptDataWithRSA(byte[] data) throws Exception;
 }
