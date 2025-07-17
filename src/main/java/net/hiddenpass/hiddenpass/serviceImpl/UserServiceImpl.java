@@ -4,6 +4,7 @@ import net.hiddenpass.hiddenpass.models.*;
 import net.hiddenpass.hiddenpass.repository.AccessCodeRepository;
 import net.hiddenpass.hiddenpass.repository.UserRepository;
 import net.hiddenpass.hiddenpass.responseDTO.ExistEmailDTO;
+import net.hiddenpass.hiddenpass.responseDTO.IvAndSaltDTO;
 import net.hiddenpass.hiddenpass.responseDTO.UpdateEmailUserDTO;
 import net.hiddenpass.hiddenpass.security.jwt.JwtUtils;
 import net.hiddenpass.hiddenpass.service.AccessCodeService;
@@ -25,15 +26,16 @@ public class UserServiceImpl implements UserService {
     private final AccessCodeService accessCodeService;
     private final AccessCodeRepository accessCodeRepository;
     private final EncryptionUtilsService encryptionUtils;
-    private final KeyStoreService keyStoreService;
+//    private final KeyStoreService keyStoreService;
 
     public UserServiceImpl(UserRepository userRepository,
                            PasswordEncoder passwordEncoder,
                            JwtUtils jwtUtils,
                            AccessCodeService accessCodeService,
                            AccessCodeRepository accessCodeRepository,
-                           EncryptionUtilsService encryptionUtils,
-                           KeyStoreService keyStoreService) {
+                           EncryptionUtilsService encryptionUtils
+//                           KeyStoreService keyStoreService
+    ) {
 
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -41,7 +43,7 @@ public class UserServiceImpl implements UserService {
         this.accessCodeService = accessCodeService;
         this.accessCodeRepository = accessCodeRepository;
         this.encryptionUtils = encryptionUtils;
-        this.keyStoreService = keyStoreService;
+//        this.keyStoreService = keyStoreService;
     }
 
     /**
@@ -70,19 +72,20 @@ public class UserServiceImpl implements UserService {
      * @return empty
      */
     @Override
+    @Transactional
     public Optional<UserEntity> createUser(UserEntity user) throws Exception{
 
-        byte[] encryptedName = keyStoreService.exportBase64ToArray(user.getName());
-        byte[] encryptedUsername = keyStoreService.exportBase64ToArray(user.getUsername());
-        byte[] encryptedPassword = keyStoreService.exportBase64ToArray(user.getPassword());
+//        byte[] encryptedName = keyStoreService.exportBase64ToArray(user.getName());
+//        byte[] encryptedUsername = keyStoreService.exportBase64ToArray(user.getUsername());
+//        byte[] encryptedPassword = keyStoreService.exportBase64ToArray(user.getPassword());
+//
+//        String decryptedName = keyStoreService.decryptDataWithRSA(encryptedName);
+//        String decryptedUsername = keyStoreService.decryptDataWithRSA(encryptedUsername);
+//        String decryptedPassword = keyStoreService.decryptDataWithRSA(encryptedPassword);
 
-        String decryptedName = keyStoreService.decryptDataWithRSA(encryptedName);
-        String decryptedUsername = keyStoreService.decryptDataWithRSA(encryptedUsername);
-        String decryptedPassword = keyStoreService.decryptDataWithRSA(encryptedPassword);
-
-        user.setName(decryptedName);
-        user.setUsername(decryptedUsername);
-        user.setPassword(decryptedPassword);
+//        user.setName(decryptedName);
+//        user.setUsername(decryptedUsername);
+//        user.setPassword(decryptedPassword);
 
         RoleEntity roleEntity = new RoleEntity();
         Set<RoleEntity> roles = new HashSet<>();
@@ -91,8 +94,8 @@ public class UserServiceImpl implements UserService {
 
         if (userExisting.isPresent()) {
             throw new IllegalArgumentException("User already exists");
-        } if (user.getAccessCode() != null) {
-            Long code = Long.parseLong(user.getAccessCode());
+        } else if (user.getAccessCode() != null) {
+            Long code = user.getAccessCode().getId();
 
             Optional<AccessCodeEntity> accessCodeEntityOptional = accessCodeRepository.findById(code);
             if (accessCodeEntityOptional.isPresent()) {
@@ -106,11 +109,11 @@ public class UserServiceImpl implements UserService {
                     user.setRoles(roles);
 
                     user.setPassword(passwordEncoder.encode(user.getPassword()));
-                    user.setUserSalt(encryptionUtils.ivOrSalt());
-                    user.setUserIv(encryptionUtils.ivOrSalt());
+                    user.setUserSalt(user.getUserSalt());
+                    user.setUserIv(user.getUserIv());
 
                     this.userRepository.save(user);
-                    this.accessCodeRepository.save(accessCodeEntity);
+//                    this.accessCodeRepository.save(accessCodeEntity);
 
                     return Optional.empty();
                 }
@@ -124,8 +127,8 @@ public class UserServiceImpl implements UserService {
             roles.add(roleEntity);
             user.setRoles(roles);
             user.setPassword(passwordEncoder.encode(user.getPassword()));
-            user.setUserSalt(encryptionUtils.ivOrSalt());
-            user.setUserIv(encryptionUtils.ivOrSalt());
+            user.setUserSalt(user.getUserSalt());
+            user.setUserIv(user.getUserIv());
 
             this.userRepository.save(user);
             return Optional.empty();
@@ -279,5 +282,20 @@ public class UserServiceImpl implements UserService {
         Optional<UserEntity> existingUser = userRepository.findByUsername(emailDTO.getEmail());
 
         return existingUser.isPresent();
+    }
+
+    @Override
+    public IvAndSaltDTO getIvAndSalt(String email) {
+        Optional<UserEntity> userExisting = userRepository.findByUsername(email);
+
+        if(userExisting.isPresent()) {
+            UserEntity userEntity = userExisting.get();
+
+            IvAndSaltDTO ivAndSaltDTO = new IvAndSaltDTO();
+            ivAndSaltDTO.setSalt(userEntity.getUserSalt());
+            ivAndSaltDTO.setIv(userEntity.getUserIv());
+            return ivAndSaltDTO;
+        }
+        throw new IllegalArgumentException("User not found");
     }
 }

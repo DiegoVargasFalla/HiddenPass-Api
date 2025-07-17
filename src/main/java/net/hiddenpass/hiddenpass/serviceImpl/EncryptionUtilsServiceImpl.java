@@ -1,5 +1,6 @@
 package net.hiddenpass.hiddenpass.serviceImpl;
 
+import com.fasterxml.jackson.databind.ser.Serializers;
 import net.hiddenpass.hiddenpass.service.EncryptionUtilsService;
 import org.springframework.stereotype.Service;
 
@@ -53,6 +54,6 @@ public class EncryptionUtilsServiceImpl implements EncryptionUtilsService {
     public byte[] ivOrSalt() {
         byte[] ivOrSalt = new byte[16];
         new SecureRandom().nextBytes(ivOrSalt);
-        return ivOrSalt;
+        return Base64.getEncoder().encode(ivOrSalt);
     }
 }

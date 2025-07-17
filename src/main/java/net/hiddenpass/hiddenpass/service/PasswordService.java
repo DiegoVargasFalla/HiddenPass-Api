@@ -14,11 +14,11 @@ import java.util.Optional;
 public interface PasswordService {
     List<PassWordEntity> getPassWords();
     Optional<PassWordEntity> getPassWord(Long id);
-    Optional<PassWordEntity> createPassWord(String email, PasswordEntityDTO passWordDto) throws Exception;
-    boolean checkPasswordOrUrlUniqueFromUser(String urlOrEmail, UserEntity user, String dataType, String masterKey) throws Exception;
+    Optional<PassWordEntity> createPassWord(String email, PasswordResponseDTO passwordResponseDTO) throws Exception;
+//    boolean checkPasswordOrUrlUniqueFromUser(String urlOrEmail, UserEntity user, String dataType, String masterKey) throws Exception;
     boolean deletePassWord(Long id, String emailUser);
-    List<PasswordResponseDTO> getPassWordsFromUser(String emailUser, MasterKeyDTO masterKeyDTO) throws Exception;
-    Optional<?> updatePassWord(String email, PasswordEntityDTO passwordEntityDTO) throws Exception;
+    List<PasswordResponseDTO> getPassWordsFromUser(String emailUser) throws Exception;
+    Optional<?> updatePassWord(String email, PasswordEntityDTO passwordEntityDTO);
     Optional<SecurePasswordEntity> checkSecurePassword(SecurePasswordDTO securePasswordDTO);
     String generateSecurePassword();
 }

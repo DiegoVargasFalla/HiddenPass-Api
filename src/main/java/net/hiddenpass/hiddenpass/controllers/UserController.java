@@ -129,4 +129,19 @@ public class UserController {
         //    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
         return ResponseEntity.status(HttpStatus.OK).body(keyStoreService.getPublicKey());
     }
+    @GetMapping("/salt")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    public ResponseEntity<?> getSalt(@RequestHeader("Authorization") String token) {
+
+        if (token != null && token.startsWith("Bearer ")) {
+            String tokenExtract = token.substring(7);
+
+            if(jwtUtils.validateToken(tokenExtract)) {
+                String email = userService.getUsernameFromToken(token);
+                return ResponseEntity.status(HttpStatus.OK).body(userService.getIvAndSalt(email));
+            }
+        }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
 }

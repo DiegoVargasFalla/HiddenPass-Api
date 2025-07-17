@@ -35,7 +35,8 @@ public class UserEntity{
     @JsonManagedReference
     private List<NoteEntity> listNotes;
 
-    String accessCode;
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST, orphanRemoval = true)
+    AccessCodeEntity accessCode;
     String userSalt;
     String  userIv;
 
@@ -87,28 +88,28 @@ public class UserEntity{
         this.roles = roles;
     }
 
-    public String getAccessCode() {
+    public AccessCodeEntity getAccessCode() {
         return accessCode;
     }
 
-    public void setAccessCode(String accessCode) {
+    public void setAccessCode(AccessCodeEntity accessCode) {
         this.accessCode = accessCode;
     }
 
-    public byte[] getUserSalt() {
-        return Base64.getDecoder().decode(userSalt);
+    public String getUserSalt() {
+        return userSalt;
     }
 
-    public void setUserSalt(byte[] userSalt) {
-        this.userSalt = Base64.getEncoder().encodeToString(userSalt);
+    public void setUserSalt(String userSalt) {
+        this.userSalt = userSalt;
     }
 
-    public byte[] getUserIv() {
-        return Base64.getDecoder().decode(userIv);
+    public String getUserIv() {
+        return userIv;
     }
 
-    public void setUserIv(byte[] userIv) {
-        this.userIv = Base64.getEncoder().encodeToString(userIv);
+    public void setUserIv(String userIv) {
+        this.userIv = userIv;
     }
 
     public List<NoteEntity> getListNotes() {
@@ -117,13 +118,5 @@ public class UserEntity{
 
     public void setListNotes(List<NoteEntity> listNotes) {
         this.listNotes = listNotes;
-    }
-
-    public void setUserSalt(String userSalt) {
-        this.userSalt = userSalt;
-    }
-
-    public void setUserIv(String userIv) {
-        this.userIv = userIv;
     }
 }

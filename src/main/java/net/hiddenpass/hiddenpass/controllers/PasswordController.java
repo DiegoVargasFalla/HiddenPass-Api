@@ -4,10 +4,7 @@ package net.hiddenpass.hiddenpass.controllers;
 import jakarta.validation.Valid;
 import net.hiddenpass.hiddenpass.models.PassWordEntity;
 import net.hiddenpass.hiddenpass.models.SecurePasswordEntity;
-import net.hiddenpass.hiddenpass.responseDTO.PasswordEntityDTO;
-import net.hiddenpass.hiddenpass.responseDTO.DeleteIdPasswordFromUserDTO;
-import net.hiddenpass.hiddenpass.responseDTO.MasterKeyDTO;
-import net.hiddenpass.hiddenpass.responseDTO.SecurePasswordDTO;
+import net.hiddenpass.hiddenpass.responseDTO.*;
 import net.hiddenpass.hiddenpass.service.PasswordService;
 import net.hiddenpass.hiddenpass.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -61,12 +58,12 @@ public class PasswordController {
      */
     @PostMapping("/add-password")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<?> createPassword(@RequestBody PasswordEntityDTO passwordDTO, @RequestHeader("Authorization") String token) throws Exception{
+    public ResponseEntity<?> createPassword(@RequestHeader("Authorization") String token, @RequestBody PasswordResponseDTO passwordResponseDTO) throws Exception{
         String username = userService.getUsernameFromToken(token);
         if (username == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No email user found");
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body(passwordService.createPassWord(username, passwordDTO));
+        return ResponseEntity.status(HttpStatus.CREATED).body(passwordService.createPassWord(username, passwordResponseDTO));
     }
 
     /**
@@ -94,12 +91,12 @@ public class PasswordController {
     @PostMapping("/passwords-user")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     //change the arriving email attribute in the token
-    public ResponseEntity<?> getPasswordsUser(@RequestHeader("Authorization") String token, @Valid @RequestBody MasterKeyDTO masterKeyDTO) throws Exception{
+    public ResponseEntity<?> getPasswordsUser(@RequestHeader("Authorization") String token) throws Exception{
         String userEmail = userService.getUsernameFromToken(token);
         if(userEmail == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No email user found");
         }
-        return ResponseEntity.status(HttpStatus.OK).body(passwordService.getPassWordsFromUser(userEmail, masterKeyDTO));
+        return ResponseEntity.status(HttpStatus.OK).body(passwordService.getPassWordsFromUser(userEmail));
     }
 
 

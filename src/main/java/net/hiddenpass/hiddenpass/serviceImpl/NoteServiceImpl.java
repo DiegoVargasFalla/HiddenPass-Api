@@ -51,18 +51,18 @@ public class NoteServiceImpl implements NoteService {
         if (userExisting.isPresent()) {
             UserEntity user = userExisting.get();
 
-            byte[] saltUser = user.getUserSalt();
-            byte[] ivUser = user.getUserIv();
+//            byte[] saltUser = user.getUserSalt();
+//            byte[] ivUser = user.getUserIv();
 
-            SecretKey derivedKey = encryptionUtils.deriveKey(decryptedNoteDTO.getMasterKey(), saltUser);
-
-            String encryptTitle = encryptionUtils.encrypt(decryptedNoteDTO.getTitle(), derivedKey, ivUser);
-            String encryptContent = encryptionUtils.encrypt(decryptedNoteDTO.getContent(), derivedKey, ivUser);
+//            SecretKey derivedKey = encryptionUtils.deriveKey(decryptedNoteDTO.getMasterKey(), saltUser);
+//
+//            String encryptTitle = encryptionUtils.encrypt(decryptedNoteDTO.getTitle(), derivedKey, ivUser);
+//            String encryptContent = encryptionUtils.encrypt(decryptedNoteDTO.getContent(), derivedKey, ivUser);
 
             NoteEntity noteEntity = new NoteEntity();
 
-            noteEntity.setTitle(encryptTitle);
-            noteEntity.setContent(encryptContent);
+            noteEntity.setTitle(noteDTO.getTitle());
+            noteEntity.setContent(noteDTO.getContent());
             noteEntity.setZoneDateTimeClient(noteDTO.getZoneDateClient());
             noteEntity.setDateTimeClient(noteDTO.getIsoDate(), noteDTO.getZoneDateClient());
             noteEntity.setUser(user);
@@ -77,11 +77,11 @@ public class NoteServiceImpl implements NoteService {
     @Override
     public ArrayList<NoteEntity> getAllNotes(String email, MasterKeyDTO masterKeyDTO) throws Exception {
 
-        byte[] decryptedAesKeyFront = keyStoreService.decryptAES(masterKeyDTO.getAesKey());
-        byte[] ivFront = keyStoreService.exportBase64ToArray(masterKeyDTO.getIvFront());
-        byte[] encryptedMasterKey = keyStoreService.exportBase64ToArray(masterKeyDTO.getMasterKey());
+//        byte[] decryptedAesKeyFront = keyStoreService.decryptAES(masterKeyDTO.getAesKey());
+//        byte[] ivFront = keyStoreService.exportBase64ToArray(masterKeyDTO.getIvFront());
+//        byte[] encryptedMasterKey = keyStoreService.exportBase64ToArray(masterKeyDTO.getMasterKey());
 
-        String masterKey = keyStoreService.decryptMasterKey(encryptedMasterKey);
+//        String masterKey = keyStoreService.decryptMasterKey(encryptedMasterKey);
 
         Optional<UserEntity> userExisting = userRepository.findByUsername(email);
         ArrayList<NoteEntity> noteEntityArrayList = new ArrayList<>();
@@ -90,21 +90,17 @@ public class NoteServiceImpl implements NoteService {
 
             UserEntity user = userExisting.get();
 
-            byte[] salt = user.getUserSalt();
-            byte[] iv = user.getUserIv();
+//            byte[] salt = user.getUserSalt();
+//            byte[] iv = user.getUserIv();
 
-            SecretKey derivedKey = encryptionUtils.deriveKey(masterKey, salt);
+//            SecretKey derivedKey = encryptionUtils.deriveKey(masterKey, salt);
 
-             for(NoteEntity note: user.getListNotes()) {
-
-                 String title = encryptionUtils.decrypt(note.getTitle(), derivedKey, iv);
-                 String content = encryptionUtils.decrypt(note.getContent(), derivedKey, iv);
-
-                 note.setTitle(keyStoreService.encryptDataWithAES(title, decryptedAesKeyFront, ivFront));
-                 note.setContent(keyStoreService.encryptDataWithAES(content, decryptedAesKeyFront, ivFront));
-
-                 noteEntityArrayList.add(note);
-             }
+            //                 String title = encryptionUtils.decrypt(note.getTitle(), derivedKey, iv);
+            //                 String content = encryptionUtils.decrypt(note.getContent(), derivedKey, iv);
+            //
+            //                 note.setTitle(keyStoreService.encryptDataWithAES(title, decryptedAesKeyFront, ivFront));
+            //                 note.setContent(keyStoreService.encryptDataWithAES(content, decryptedAesKeyFront, ivFront));
+            noteEntityArrayList.addAll(user.getListNotes());
         }
         return noteEntityArrayList;
     }
@@ -126,26 +122,26 @@ public class NoteServiceImpl implements NoteService {
         Optional<UserEntity> userExisting = userRepository.findByUsername(email);
         if (userExisting.isPresent()) {
             UserEntity user = userExisting.get();
-            byte[] salt = user.getUserSalt();
-            byte[] iv = user.getUserIv();
+//            byte[] salt = user.getUserSalt();
+//            byte[] iv = user.getUserIv();
 
-            SecretKey derivedKey = encryptionUtils.deriveKey(masterKey, salt);
+//            SecretKey derivedKey = encryptionUtils.deriveKey(masterKey, salt);
 
             for(NoteEntity note: user.getListNotes()) {
 
                 if(note.getId().equals(noteEntityUpdateDTO.getId())) {
 
                     if(noteEntityUpdateDTO.getTitle() != null) {
-                        byte[] encryptedTitle = keyStoreService.exportBase64ToArray(noteEntityUpdateDTO.getTitle());
-                        String decryptedTitle = keyStoreService.decryptDataWithAES(encryptedTitle, aesKey, ivFront);
-                        String encryptTitle = encryptionUtils.encrypt(decryptedTitle, derivedKey, iv);
-                        note.setTitle(encryptTitle);
+//                        byte[] encryptedTitle = keyStoreService.exportBase64ToArray(noteEntityUpdateDTO.getTitle());
+//                        String decryptedTitle = keyStoreService.decryptDataWithAES(encryptedTitle, aesKey, ivFront);
+//                        String encryptTitle = encryptionUtils.encrypt(decryptedTitle, derivedKey, iv);
+                        note.setTitle(noteEntityUpdateDTO.getTitle());
 
                     } if(noteEntityUpdateDTO.getContent() != null) {
-                        byte[] encryptedContent = keyStoreService.exportBase64ToArray(noteEntityUpdateDTO.getContent());
-                        String decryptedContent = keyStoreService.decryptDataWithAES(encryptedContent, aesKey, ivFront);
-                        String encryptContent = encryptionUtils.encrypt(decryptedContent, derivedKey, iv);
-                        note.setContent(encryptContent);
+//                        byte[] encryptedContent = keyStoreService.exportBase64ToArray(noteEntityUpdateDTO.getContent());
+//                        String decryptedContent = keyStoreService.decryptDataWithAES(encryptedContent, aesKey, ivFront);
+//                        String encryptContent = encryptionUtils.encrypt(decryptedContent, derivedKey, iv);
+                        note.setContent(noteEntityUpdateDTO.getContent());
                     }
                     userRepository.save(user);
                     break;
