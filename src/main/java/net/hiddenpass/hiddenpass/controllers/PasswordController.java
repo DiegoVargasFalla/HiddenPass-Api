@@ -52,7 +52,7 @@ public class PasswordController {
 
     /**
      * add password to a user, This method access [USER, ADMIN]
-     * @param passwordDTO Object from PasswordEntity
+     * @param passwordResponseDTO Object passwordResponseDTO
      * @param token in request from user and extract email
      * @return password created
      */
@@ -68,7 +68,7 @@ public class PasswordController {
 
     /**
      * This method access [USER, ADMIN], deleted user password and received
-     * a object DeleteIdPasswordFromUserDTO that have two attributes
+     * A object DeleteIdPasswordFromUserDTO that have two attributes
      * @param deleteIdPasswordFromUser object received
      * @return response status OK
      */
@@ -104,18 +104,18 @@ public class PasswordController {
     //delete variables Object
     /**
      * This method access [USER, ADMIN]
-     * @param passwordEntityDTO manage the email with the token
+     * @param passwordResponseDTO Object to update
      * @return Object PasswordEntity or error
      */
     @PatchMapping("/update-password")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<?> updatePassword(@RequestHeader("Authorization") String token, @Valid @RequestBody PasswordEntityDTO passwordEntityDTO) throws Exception {
+    public ResponseEntity<?> updatePassword(@RequestHeader("Authorization") String token, @Valid @RequestBody PasswordResponseDTO passwordResponseDTO) throws Exception {
 
         String userEmail = userService.getUsernameFromToken(token);
         if(userEmail == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No email user found");
         }
-        return ResponseEntity.status(HttpStatus.OK).body(passwordService.updatePassWord(userEmail, passwordEntityDTO));
+        return ResponseEntity.status(HttpStatus.OK).body(passwordService.updatePassWord(userEmail, passwordResponseDTO));
     }
 
     /**

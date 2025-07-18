@@ -6,9 +6,9 @@ public class NoteEntityDTO {
     private String content;
     private String isoDate;
     private String zoneDateClient;
-    private String masterKey;
-    private String encryptedAesKey;
-    private String ivFront;
+//    private String masterKey;
+//    private String encryptedAesKey;
+//    private String ivFront;
 
     public Long getId() {
         return id;
@@ -42,35 +42,11 @@ public class NoteEntityDTO {
         this.zoneDateClient = zoneDateClient;
     }
 
-    public String getMasterKey() {
-        return masterKey;
-    }
-
-    public String getEncryptedAesKey() {
-        return encryptedAesKey;
-    }
-
-    public void setEncryptedAesKey(String encryptedAesKey) {
-        this.encryptedAesKey = encryptedAesKey;
-    }
-
-    public String getIvFront() {
-        return ivFront;
-    }
-
-    public void setIvFront(String ivFront) {
-        this.ivFront = ivFront;
-    }
-
     public String getIsoDate() {
         return isoDate;
     }
 
     public void setIsoDate(String isoDate) {
         this.isoDate = isoDate;
-    }
-
-    public void setMasterKey(String masterKey) {
-        this.masterKey = masterKey;
     }
 }

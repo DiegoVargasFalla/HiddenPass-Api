@@ -32,18 +32,19 @@ public class PasswordServiceImpl implements PasswordService {
     public final UserRepository userRepository;
 //    private final UserService userService;
 //    private final EncryptionUtilsService encryptionUtils;
-    private final KeyStoreService keyStoreService;
+//    private final KeyStoreService keyStoreService;
 
     public PasswordServiceImpl(PasswordRepository passwordRepository,
-                               UserRepository userRepository,
+                               UserRepository userRepository
 //                               UserService userService,
 //                               EncryptionUtilsService encryptionUtils,
-                               KeyStoreService keyStoreService) {
+//                               KeyStoreService keyStoreService
+    ) {
         this.passwordRepository = passwordRepository;
         this.userRepository = userRepository;
 //        this.userService = userService;
 //        this.encryptionUtils = encryptionUtils;
-        this.keyStoreService = keyStoreService;
+//        this.keyStoreService = keyStoreService;
     }
 
     /**
@@ -78,7 +79,7 @@ public class PasswordServiceImpl implements PasswordService {
      */
     @Override
     @Transactional
-    public Optional<PassWordEntity> createPassWord(String email, PasswordResponseDTO passwordResponseDTO) throws Exception{
+    public Optional<PassWordEntity> createPassWord(String email, PasswordResponseDTO passwordResponseDTO) {
 
 //        PasswordEntityDTO passWordDTO = keyStoreService.decryptAllDataPassword(passwordEntityDTO);
 
@@ -131,7 +132,7 @@ public class PasswordServiceImpl implements PasswordService {
      */
     @Override
     @Transactional
-    public List<PasswordResponseDTO> getPassWordsFromUser(String emailUser){
+    public List<PassWordEntity> getPassWordsFromUser(String emailUser){
 
 //        byte[] decryptedAES = keyStoreService.decryptAES(masterKeyDTO.getAesKey());
 //        byte[] ivFront = keyStoreService.exportBase64ToArray(masterKeyDTO.getIvFront());
@@ -147,30 +148,30 @@ public class PasswordServiceImpl implements PasswordService {
 //            byte[] iv = user.getUserIv();
 
 //            SecretKey derivedKey = encryptionUtils.deriveKey(masterKey, salt);
-            ArrayList<PasswordResponseDTO> passwordResponseListDTO = new ArrayList<>();
-
-            for (PassWordEntity password: user.getListPass()) {
-                try {
-                    PasswordResponseDTO passwordResponseDTO = new PasswordResponseDTO();
-//                    String passwordDecrypted = encryptionUtils.decrypt(password.getPassword(), derivedKey, iv);
-
-//                    String passwordEncryptedWithAES = keyStoreService.encryptDataWithAES(passwordDecrypted, decryptedAES, ivFront);
-
-                    passwordResponseDTO.setId(password.getId());
-                    passwordResponseDTO.setUsername(password.getUsername());
-                    passwordResponseDTO.setPassword(password.getPassword());
-                    passwordResponseDTO.setUrl(password.getUrl());
-                    passwordResponseDTO.setNote(password.getNote());
-
-                    passwordResponseListDTO.add(passwordResponseDTO);
-
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            return passwordResponseListDTO;
+//            ArrayList<PasswordResponseDTO> passwordResponseListDTO = new ArrayList<>();
+//
+//            for (PassWordEntity password: user.getListPass()) {
+//                try {
+//                    PasswordResponseDTO passwordResponseDTO = new PasswordResponseDTO();
+////                    String passwordDecrypted = encryptionUtils.decrypt(password.getPassword(), derivedKey, iv);
+//
+////                    String passwordEncryptedWithAES = keyStoreService.encryptDataWithAES(passwordDecrypted, decryptedAES, ivFront);
+//
+//                    passwordResponseDTO.setId(password.getId());
+//                    passwordResponseDTO.setUsername(password.getUsername());
+//                    passwordResponseDTO.setPassword(password.getPassword());
+//                    passwordResponseDTO.setUrl(password.getUrl());
+//                    passwordResponseDTO.setNote(password.getNote());
+//
+//                    passwordResponseListDTO.add(passwordResponseDTO);
+//
+//                } catch (Exception e) {
+//                    throw new RuntimeException(e);
+//                }
+//            }
+            return user.getListPass();
         }
-        return new ArrayList<>();
+        throw new IllegalArgumentException("The user does not exist");
     }
 
     //This method verifies unique password or url from user
@@ -222,14 +223,14 @@ public class PasswordServiceImpl implements PasswordService {
 
     /**
      * update object password
-     * @param passwordEntityDTO new password to update
+     * @param passwordResponseDTO new password to update
      * @param emailUser email to identify owner user of passwords,
      * this param must be from token
      * @return object to handle the response in the controller, pd: predefined
      */
     @Override
     @Transactional
-    public Optional<PasswordResponseDTO> updatePassWord(String emailUser, PasswordEntityDTO passwordEntityDTO) {
+    public Optional<PassWordEntity> updatePassWord(String emailUser, PasswordResponseDTO passwordResponseDTO) {
 
 //        PasswordResponseDTO passwordResponseDTO = new PasswordResponseDTO();
 //
@@ -244,48 +245,31 @@ public class PasswordServiceImpl implements PasswordService {
         Optional<UserEntity> existingUser = userRepository.findByUsername(emailUser);
         if (existingUser.isPresent()) {
 
-//            UserEntity user = existingUser.get();
-//            byte salt = user.getUserSalt();
-//            byte[] iv = user.getUserIv();
+            UserEntity user = existingUser.get();
 
-
-            Optional<PassWordEntity> ExistingPassWordEntity =  passwordRepository.findById(passwordEntityDTO.getPassWord().getId());
-//            SecretKey key = encryptionUtils.deriveKey(decryptedPasswordEntityDTO.getMasterKey(), salt);
-
-
-            if (ExistingPassWordEntity.isPresent()) {
-
-                PassWordEntity passWordEntity = ExistingPassWordEntity.get();
-
-                if (passWordEntity.getId().equals(passwordEntityDTO.getPassWord().getId())) {
-
-                    if (passwordEntityDTO.getPassWord().getUsername() != null) {
-                        passWordEntity.setUsername(passwordEntityDTO.getPassWord().getUsername());
+            for(PassWordEntity passWord: user.getListPass()) {
+                System.out.println(passWord.getId());
+                if(passWord.getId().equals(passwordResponseDTO.getId())) {
+                    System.out.println("sis es igual: " + passWord.getId());
+                    if(passwordResponseDTO.getPassword() != null) {
+                        System.out.println(passwordResponseDTO.getPassword());
+                        passWord.setPassword(passwordResponseDTO.getPassword());
                     }
-                    if (passwordEntityDTO.getPassWord().getPassword() != null) {
-//                        if (checkPasswordOrUrlUniqueFromUser(decryptedPasswordEntityDTO.getPassWord().getPassword(), user, "P", decryptedPasswordEntityDTO.getMasterKey())) {
-//                            String encrypt = encryptionUtils.encrypt(decryptedPasswordEntityDTO.getPassWord().getPassword(), key, iv);
-                        passWordEntity.setPassword(passwordEntityDTO.getPassWord().getPassword());
-                    } else {
-                        throw new IllegalArgumentException("Password already exists");
+                    if(passwordResponseDTO.getUsername() != null) {
+                        System.out.println(passwordResponseDTO.getUsername());
+                        passWord.setUsername(passwordResponseDTO.getUsername());
                     }
+                    if(passwordResponseDTO.getNote() != null) {
+                        System.out.println(passwordResponseDTO.getNote());
+                        passWord.setNote(passwordResponseDTO.getNote());
+                    }
+                    userRepository.save(user);
+                    System.out.println("-> despues de guardar: " + passWord.getPassword());
+                    return Optional.of(passWord);
                 }
-                if (passwordEntityDTO.getPassWord().getUrl() != null) {
-                    passWordEntity.setUrl(passwordEntityDTO.getPassWord().getUrl());
-//                        if(checkPasswordOrUrlUniqueFromUser(decryptedPasswordEntityDTO.getPassWord().getUrl(), user, "U", decryptedPasswordEntityDTO.getMasterKey())) {
-//
-//                        } else {
-//                            throw new IllegalArgumentException("Url already exists");
-//                        }
-                }
-                if (passwordEntityDTO.getPassWord().getNote() != null) {
-                    passWordEntity.setNote(passwordEntityDTO.getPassWord().getNote());
-                }
-                passwordRepository.save(passWordEntity);
-                return Optional.of(new PasswordResponseDTO());
             }
         }
-        return Optional.empty();
+        throw new IllegalArgumentException("The user does not exist");
     }
 
     /**

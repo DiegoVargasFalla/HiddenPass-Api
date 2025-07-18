@@ -98,7 +98,7 @@ public class KeyStoreServiceImpl implements KeyStoreService {
     }
 
     @Override
-    public byte[] exportBase64ToArray(String value) throws Exception {
+    public byte[] exportBase64ToArray(String value) {
         return Base64.getDecoder().decode(value);
     }
 
@@ -132,17 +132,17 @@ public class KeyStoreServiceImpl implements KeyStoreService {
 
         byte[] encryptedTitle = this.exportBase64ToArray(noteDTO.getTitle());
         byte[] encryptedContent = this.exportBase64ToArray(noteDTO.getContent());
-        byte[] encryptedMasterKey = this.exportBase64ToArray(noteDTO.getMasterKey());
-        byte[] AesIv = this.exportBase64ToArray(noteDTO.getIvFront());
-        byte[] decryptedAESKeyFront = this.decryptAES(noteDTO.getEncryptedAesKey());
+//        byte[] encryptedMasterKey = this.exportBase64ToArray(noteDTO.getMasterKey());
+//        byte[] AesIv = this.exportBase64ToArray(noteDTO.getIvFront());
+//        byte[] decryptedAESKeyFront = this.decryptAES(noteDTO.getEncryptedAesKey());
 
-        String masterKey = this.decryptMasterKey(encryptedMasterKey);
-        String title = this.decryptDataWithAES(encryptedTitle, decryptedAESKeyFront, AesIv);
-        String content = this.decryptDataWithAES(encryptedContent, decryptedAESKeyFront, AesIv);
+//        String masterKey = this.decryptMasterKey(encryptedMasterKey);
+//        String title = this.decryptDataWithAES(encryptedTitle, decryptedAESKeyFront, AesIv);
+//        String content = this.decryptDataWithAES(encryptedContent, decryptedAESKeyFront, AesIv);
 
-        noteDTO.setTitle(title);
-        noteDTO.setContent(content);
-        noteDTO.setMasterKey(masterKey);
+//        noteDTO.setTitle(title);
+//        noteDTO.setContent(content);
+//        noteDTO.setMasterKey(masterKey);
         return noteDTO;
     }
 
