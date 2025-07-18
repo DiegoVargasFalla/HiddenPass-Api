@@ -6,9 +6,6 @@ public class NoteEntityDTO {
     private String content;
     private String isoDate;
     private String zoneDateClient;
-//    private String masterKey;
-//    private String encryptedAesKey;
-//    private String ivFront;
 
     public Long getId() {
         return id;

@@ -63,10 +63,8 @@ public class NoteController {
 
     @DeleteMapping("/delete-note")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-    public ResponseEntity<?> deleteNote(@RequestHeader("Authorization") String token, @Valid @RequestBody DeleteNoteDTO deleteNoteDTO) throws Exception {
+    public ResponseEntity<?> deleteNote(@RequestHeader("Authorization") String token, @Valid @RequestBody DeleteNoteDTO deleteNoteDTO) {
         String email = userService.getUsernameFromToken(token);
-        System.out.println("-> token: " + token);
-        System.out.println("-> email: " + email);
 
         if (email == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

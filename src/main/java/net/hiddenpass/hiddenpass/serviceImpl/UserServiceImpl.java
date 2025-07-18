@@ -8,8 +8,6 @@ import net.hiddenpass.hiddenpass.responseDTO.IvAndSaltDTO;
 import net.hiddenpass.hiddenpass.responseDTO.UpdateEmailUserDTO;
 import net.hiddenpass.hiddenpass.security.jwt.JwtUtils;
 import net.hiddenpass.hiddenpass.service.AccessCodeService;
-import net.hiddenpass.hiddenpass.service.EncryptionUtilsService;
-import net.hiddenpass.hiddenpass.service.KeyStoreService;
 import net.hiddenpass.hiddenpass.service.UserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,25 +23,18 @@ public class UserServiceImpl implements UserService {
     private final JwtUtils jwtUtils;
     private final AccessCodeService accessCodeService;
     private final AccessCodeRepository accessCodeRepository;
-    private final EncryptionUtilsService encryptionUtils;
-//    private final KeyStoreService keyStoreService;
 
     public UserServiceImpl(UserRepository userRepository,
                            PasswordEncoder passwordEncoder,
                            JwtUtils jwtUtils,
                            AccessCodeService accessCodeService,
-                           AccessCodeRepository accessCodeRepository,
-                           EncryptionUtilsService encryptionUtils
-//                           KeyStoreService keyStoreService
-    ) {
+                           AccessCodeRepository accessCodeRepository) {
 
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtils = jwtUtils;
         this.accessCodeService = accessCodeService;
         this.accessCodeRepository = accessCodeRepository;
-        this.encryptionUtils = encryptionUtils;
-//        this.keyStoreService = keyStoreService;
     }
 
     /**
@@ -73,19 +64,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     @Transactional
-    public Optional<UserEntity> createUser(UserEntity user) throws Exception{
-
-//        byte[] encryptedName = keyStoreService.exportBase64ToArray(user.getName());
-//        byte[] encryptedUsername = keyStoreService.exportBase64ToArray(user.getUsername());
-//        byte[] encryptedPassword = keyStoreService.exportBase64ToArray(user.getPassword());
-//
-//        String decryptedName = keyStoreService.decryptDataWithRSA(encryptedName);
-//        String decryptedUsername = keyStoreService.decryptDataWithRSA(encryptedUsername);
-//        String decryptedPassword = keyStoreService.decryptDataWithRSA(encryptedPassword);
-
-//        user.setName(decryptedName);
-//        user.setUsername(decryptedUsername);
-//        user.setPassword(decryptedPassword);
+    public Optional<UserEntity> createUser(UserEntity user) {
 
         RoleEntity roleEntity = new RoleEntity();
         Set<RoleEntity> roles = new HashSet<>();
@@ -113,7 +92,6 @@ public class UserServiceImpl implements UserService {
                     user.setUserIv(user.getUserIv());
 
                     this.userRepository.save(user);
-//                    this.accessCodeRepository.save(accessCodeEntity);
 
                     return Optional.empty();
                 }

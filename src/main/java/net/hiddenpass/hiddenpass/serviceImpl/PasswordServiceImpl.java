@@ -11,18 +11,12 @@ import net.hiddenpass.hiddenpass.models.SecurePasswordEntity;
 import net.hiddenpass.hiddenpass.models.UserEntity;
 import net.hiddenpass.hiddenpass.repository.UserRepository;
 import net.hiddenpass.hiddenpass.repository.PasswordRepository;
-//import net.hiddenpass.hiddenpass.responseDTO.MasterKeyDTO;
-import net.hiddenpass.hiddenpass.responseDTO.PasswordEntityDTO;
 import net.hiddenpass.hiddenpass.responseDTO.PasswordResponseDTO;
 import net.hiddenpass.hiddenpass.responseDTO.SecurePasswordDTO;
-//import net.hiddenpass.hiddenpass.service.EncryptionUtilsService;
-import net.hiddenpass.hiddenpass.service.KeyStoreService;
 import net.hiddenpass.hiddenpass.service.PasswordService;
-//import net.hiddenpass.hiddenpass.service.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-//import javax.crypto.SecretKey;
 import java.util.*;
 
 @Service
@@ -30,21 +24,11 @@ public class PasswordServiceImpl implements PasswordService {
 
     public final PasswordRepository passwordRepository;
     public final UserRepository userRepository;
-//    private final UserService userService;
-//    private final EncryptionUtilsService encryptionUtils;
-//    private final KeyStoreService keyStoreService;
 
     public PasswordServiceImpl(PasswordRepository passwordRepository,
-                               UserRepository userRepository
-//                               UserService userService,
-//                               EncryptionUtilsService encryptionUtils,
-//                               KeyStoreService keyStoreService
-    ) {
+                               UserRepository userRepository) {
         this.passwordRepository = passwordRepository;
         this.userRepository = userRepository;
-//        this.userService = userService;
-//        this.encryptionUtils = encryptionUtils;
-//        this.keyStoreService = keyStoreService;
     }
 
     /**
@@ -88,32 +72,12 @@ public class PasswordServiceImpl implements PasswordService {
         if (userExisting.isPresent()) {
             UserEntity user = userExisting.get();
 
-//            boolean checkPass = checkPasswordOrUrlUniqueFromUser(passWordDTO.getPassWord().getPassword(), user, "P", passWordDTO.getMasterKey());
-//            boolean checkUrl = checkPasswordOrUrlUniqueFromUser(passWordDTO.getPassWord().getUrl(), user, "U", passWordDTO.getMasterKey());
-
-//            if (!checkPass) {
-//                throw new IllegalArgumentException("The password already exists");
-//            }
-//            if (!checkUrl) {
-//                throw new IllegalArgumentException("The url already exists");
-//            }
-
-            //get salt and iv from user
-//            String salt = user.getUserSalt();
-//            String iv = user.getUserIv();
-
-//            SecretKey derivedKey =  encryptionUtils.deriveKey(passWordDTO.getMasterKey(), salt);
-//            String encryptedPassword = encryptionUtils.encrypt(passWordDTO.getPassWord().getPassword(), derivedKey, iv);
-
-//            passWordDTO.getPassWord().setPassword(user.getPassword());
-
             PassWordEntity passWordEntity = new PassWordEntity();
             passWordEntity.setPassword(passwordResponseDTO.getPassword());
             passWordEntity.setUsername(passwordResponseDTO.getUsername());
             passWordEntity.setUrl(passwordResponseDTO.getUrl());
             passWordEntity.setNote(passwordResponseDTO.getNote());
             passWordEntity.setUser(user);
-//            passWordDTO.getPassWord().setUser(user);
 
             PassWordEntity passwordSaved = passwordRepository.save(passWordEntity);
 
@@ -134,41 +98,11 @@ public class PasswordServiceImpl implements PasswordService {
     @Transactional
     public List<PassWordEntity> getPassWordsFromUser(String emailUser){
 
-//        byte[] decryptedAES = keyStoreService.decryptAES(masterKeyDTO.getAesKey());
-//        byte[] ivFront = keyStoreService.exportBase64ToArray(masterKeyDTO.getIvFront());
-//        byte[] encryptedMasterKey = keyStoreService.exportBase64ToArray(masterKeyDTO.getMasterKey());
-
-//        String masterKey = keyStoreService.decryptMasterKey(encryptedMasterKey);
-
         Optional<UserEntity> userExisting = userRepository.findByUsername(emailUser);
         if (userExisting.isPresent()) {
 
             UserEntity user = userExisting.get();
-//            byte[] salt = user.getUserSalt();
-//            byte[] iv = user.getUserIv();
 
-//            SecretKey derivedKey = encryptionUtils.deriveKey(masterKey, salt);
-//            ArrayList<PasswordResponseDTO> passwordResponseListDTO = new ArrayList<>();
-//
-//            for (PassWordEntity password: user.getListPass()) {
-//                try {
-//                    PasswordResponseDTO passwordResponseDTO = new PasswordResponseDTO();
-////                    String passwordDecrypted = encryptionUtils.decrypt(password.getPassword(), derivedKey, iv);
-//
-////                    String passwordEncryptedWithAES = keyStoreService.encryptDataWithAES(passwordDecrypted, decryptedAES, ivFront);
-//
-//                    passwordResponseDTO.setId(password.getId());
-//                    passwordResponseDTO.setUsername(password.getUsername());
-//                    passwordResponseDTO.setPassword(password.getPassword());
-//                    passwordResponseDTO.setUrl(password.getUrl());
-//                    passwordResponseDTO.setNote(password.getNote());
-//
-//                    passwordResponseListDTO.add(passwordResponseDTO);
-//
-//                } catch (Exception e) {
-//                    throw new RuntimeException(e);
-//                }
-//            }
             return user.getListPass();
         }
         throw new IllegalArgumentException("The user does not exist");
@@ -187,7 +121,6 @@ public class PasswordServiceImpl implements PasswordService {
     //@Transactional
 //    public boolean checkPasswordOrUrlUniqueFromUser(String passwordOrUrl, UserEntity user, String dataType, String masterKey) throws Exception{
 //
-//        // get sal, iv and derived key
 //        byte[] salt = user.getUserSalt();
 //        byte[] iv = user.getUserIv();
 //        SecretKey key =  encryptionUtils.deriveKey(masterKey, salt);
@@ -232,39 +165,23 @@ public class PasswordServiceImpl implements PasswordService {
     @Transactional
     public Optional<PassWordEntity> updatePassWord(String emailUser, PasswordResponseDTO passwordResponseDTO) {
 
-//        PasswordResponseDTO passwordResponseDTO = new PasswordResponseDTO();
-//
-//        passwordResponseDTO.setId(passwordEntityDTO.getPassWord().getId());
-//        passwordResponseDTO.setUsername(passwordEntityDTO.getPassWord().getUsername());
-//        passwordResponseDTO.setPassword(passwordEntityDTO.getPassWord().getPassword());
-//        passwordResponseDTO.setUrl(passwordEntityDTO.getPassWord().getUrl());
-//        passwordResponseDTO.setNote(passwordEntityDTO.getPassWord().getNote());
-
-//        PasswordEntityDTO decryptedPasswordEntityDTO = keyStoreService.decryptAllDataPassword(passwordEntityDTO);
-
         Optional<UserEntity> existingUser = userRepository.findByUsername(emailUser);
         if (existingUser.isPresent()) {
 
             UserEntity user = existingUser.get();
 
             for(PassWordEntity passWord: user.getListPass()) {
-                System.out.println(passWord.getId());
                 if(passWord.getId().equals(passwordResponseDTO.getId())) {
-                    System.out.println("sis es igual: " + passWord.getId());
                     if(passwordResponseDTO.getPassword() != null) {
-                        System.out.println(passwordResponseDTO.getPassword());
                         passWord.setPassword(passwordResponseDTO.getPassword());
                     }
                     if(passwordResponseDTO.getUsername() != null) {
-                        System.out.println(passwordResponseDTO.getUsername());
                         passWord.setUsername(passwordResponseDTO.getUsername());
                     }
                     if(passwordResponseDTO.getNote() != null) {
-                        System.out.println(passwordResponseDTO.getNote());
                         passWord.setNote(passwordResponseDTO.getNote());
                     }
                     userRepository.save(user);
-                    System.out.println("-> despues de guardar: " + passWord.getPassword());
                     return Optional.of(passWord);
                 }
             }
