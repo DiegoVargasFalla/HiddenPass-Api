@@ -26,6 +26,7 @@ public class PassWordEntity {
     @JsonBackReference
     private UserEntity user;
 
+
     public Long getId() {
         return id;
     }

@@ -109,7 +109,7 @@ public class PasswordController {
      */
     @PatchMapping("/update-password")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<?> updatePassword(@RequestHeader("Authorization") String token, @Valid @RequestBody PasswordResponseDTO passwordResponseDTO) throws Exception {
+    public ResponseEntity<?> updatePassword(@RequestHeader("Authorization") String token, @RequestBody PasswordResponseDTO passwordResponseDTO) throws Exception {
 
         String userEmail = userService.getUsernameFromToken(token);
         if(userEmail == null) {

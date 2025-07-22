@@ -1,7 +1,7 @@
 # 🔐 HiddenPass – Gestor Seguro de Contraseñas
 
-**HiddenPass** es una aplicación robusta y escalable para la gestión de contraseñas personales y notas privadas, con enfoque en la seguridad avanzada, cifrado híbrido y buenas prácticas de arquitectura backend moderna.  
-Desarrollado con **Java + Spring Boot +  Spring Security + JWT + Gradle**, integra seguridad de extremo a extremo y persistencia cifrada con un enfoque de múltiples capas para proteger los datos sensibles.
+**HiddenPass** es una aplicación robusta y escalable para la gestión de contraseñas personales y notas privadas, con enfoque en la seguridad avanzada, cifrado de conocimiento cero y buenas prácticas de arquitectura backend moderna.  
+Desarrollado con **Java + Spring Boot +  Spring Security + JWT + Gradle**, integra seguridad de cifrado AES para una persistencia segura los datos sensibles.
 
 ---
 
@@ -12,18 +12,18 @@ Desarrollado con **Java + Spring Boot +  Spring Security + JWT + Gradle**, integ
     - Cada contraseña puede tener: usuario, URL, contraseña, y nota opcional
 
 - **Gestión de notas privadas cifradas**
-    - Almacenamiento seguro de notas con cifrado híbrido de extremo a extremo
+    - Almacenamiento seguro de notas con cifrado AES y clave derivada.
 
 - **Generador de contraseñas seguras**
     - Función integrada para generar contraseñas aleatorias, robustas y personalizables
 
-- **Cifrado híbrido de extremo a extremo (E2EE)**
-    - Envío de datos cifrados desde el frontend con **AES + RSA**
-    - El backend desencripta con clave privada
+- **Cifrado AES con clave derivadaa**
+    - Envío de datos cifrados desde el frontend con **AES** a partir de clave derivada.
+    - El backend almacena los datos cifrados enviados desde el cliente sin decifrar ningun tipo de datos.
 
 - **Persistencia segura con clave derivada**
-    - Los datos se almacenan en la base de datos cifrados nuevamente, usando un esquema de **clave derivada única por usuario**
-    - Esto asegura una separación entre el cifrado de transmisión y el cifrado de almacenamiento
+    - Los datos se almacenan usando un esquema de **clave derivada única por usuario**
+    - Esto asegura una confidencialidad cumpliendo con el principio de conocimiento cero.
 
 - **Autenticación y autorización con JWT**
     - Inicio de sesión seguro mediante tokens JWT
@@ -34,15 +34,14 @@ Desarrollado con **Java + Spring Boot +  Spring Security + JWT + Gradle**, integ
 ## 🧱 Tecnologías y Arquitectura
 
 - Java 17+
-- Spring Boot + Spring Security
+- Spring Boot + Spring Security + Spring Data
 - Gradle como sistema de construcción
 - JWT para autenticación
 -  MySQL como base de datos relacional
-- AES-256 + RSA-2048 para cifrado
+- AES-256
 - Arquitectura por capas (Controller, Service, Repository, DAO, Model)
 - Manejo centralizado de errores y respuestas
--   Separación entre cifrado en tránsito y en reposo
 - Claves derivadas por usuario para persistencia cifrada
-- Acceso a todas las contraseñas mediante clave maestra unica
+- Acceso a todas las contraseñas mediante clave maestra unica, derivandola con vector de inicializacion y salto.
 
 ---
