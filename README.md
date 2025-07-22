@@ -1,7 +1,7 @@
 # 🔐 HiddenPass – Gestor Seguro de Contraseñas
 
 **HiddenPass** es una aplicación robusta y escalable para la gestión de contraseñas personales y notas privadas, con enfoque en la seguridad avanzada, cifrado de conocimiento cero y buenas prácticas de arquitectura backend moderna.  
-Desarrollado con **Java + Spring Boot +  Spring Security + JWT + Gradle**, integra seguridad de cifrado AES para una persistencia segura los datos sensibles.
+Desarrollado con **Java + Spring Boot +  Spring Security + JWT + Gradle**, integra seguridad de cifrado AES y clave derivada con vector de inicialización y salto para una persistencia segura los datos sensibles e implementando el principio de conocimiento cero.
 
 ---
 
