@@ -10,6 +10,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -36,14 +37,20 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             String tokenAuthHeader = authHeader.substring(7);
 
             if (jwtUtils.validateToken(tokenAuthHeader)) {
+
                 String username = jwtUtils.getEmailFromToken(tokenAuthHeader);
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+                //here you can add logic for user authentication, depending on their permissions;
+
+                if(!userDetails.isEnabled()) {
+                    throw new UsernameNotFoundException("User " + username + " has no permission to access this resource");
+                }
 
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(username, null, userDetails.getAuthorities());
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-
             }
         }
         filterChain.doFilter(request, response);

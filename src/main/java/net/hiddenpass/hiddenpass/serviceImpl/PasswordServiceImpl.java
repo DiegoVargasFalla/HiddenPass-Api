@@ -70,6 +70,10 @@ public class PasswordServiceImpl implements PasswordService {
         Optional<UserEntity> userExisting = userRepository.findByUsername(email);
 
         if (userExisting.isPresent()) {
+
+            // ¡¡¡¡ IMPORTANT !!!!
+            // implement logic to check the user's password limits
+
             UserEntity user = userExisting.get();
 
             PassWordEntity passWordEntity = new PassWordEntity();

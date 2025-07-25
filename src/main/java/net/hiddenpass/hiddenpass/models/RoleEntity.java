@@ -1,6 +1,7 @@
 package net.hiddenpass.hiddenpass.models;
 
 import jakarta.persistence.*;
+import net.hiddenpass.hiddenpass.enumerations.ERol;
 
 @Entity
 @Table(name = "roles")

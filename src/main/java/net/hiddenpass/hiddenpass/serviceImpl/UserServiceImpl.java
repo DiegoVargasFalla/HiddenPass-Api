@@ -1,11 +1,11 @@
 package net.hiddenpass.hiddenpass.serviceImpl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import net.hiddenpass.hiddenpass.enumerations.ERol;
 import net.hiddenpass.hiddenpass.models.*;
 import net.hiddenpass.hiddenpass.repository.AccessCodeRepository;
 import net.hiddenpass.hiddenpass.repository.UserRepository;
-import net.hiddenpass.hiddenpass.responseDTO.ExistEmailDTO;
-import net.hiddenpass.hiddenpass.responseDTO.IvAndSaltDTO;
-import net.hiddenpass.hiddenpass.responseDTO.UpdateEmailUserDTO;
+import net.hiddenpass.hiddenpass.responseDTO.*;
 import net.hiddenpass.hiddenpass.security.jwt.JwtUtils;
 import net.hiddenpass.hiddenpass.service.AccessCodeService;
 import net.hiddenpass.hiddenpass.service.UserService;
@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.InputStream;
 import java.util.*;
 
 @Service
@@ -59,15 +60,23 @@ public class UserServiceImpl implements UserService {
     /**
      * create user with permission of USER or ADMIN,
      * it depends on whether  you send the code ore not
-     * @param user object with all params
+     * @param registerDTO object with all params
      * @return empty
      */
     @Override
     @Transactional
-    public Optional<UserEntity> createUser(UserEntity user) {
+    public Optional<UserEntity> createUser(UserRegisterDTO registerDTO) {
 
         RoleEntity roleEntity = new RoleEntity();
         Set<RoleEntity> roles = new HashSet<>();
+
+        UserEntity user = new UserEntity();
+        user.setName(registerDTO.getName());
+        user.setUsername(registerDTO.getUsername());
+        user.setPassword(registerDTO.getPassword());
+        user.setUserIv(registerDTO.getUserIv());
+        user.setUserSalt(registerDTO.getUserSalt());
+
 
         Optional<UserEntity> userExisting = userRepository.findByUsername(user.getUsername());
 
@@ -82,6 +91,7 @@ public class UserServiceImpl implements UserService {
                 AccessCodeEntity accessCodeEntity = accessCodeEntityOptional.get();
                 if (accessCodeEntity.getActive()) {
                     accessCodeEntity.setActive(false);
+                    accessCodeEntity.setRecipient(user);
 
                     roleEntity.setRole(ERol.ADMIN);
                     roles.add(roleEntity);
@@ -232,13 +242,45 @@ public class UserServiceImpl implements UserService {
      * @return data ype boolean
      */
     @Override
-    public boolean enabledToken(String token) {
+    public Optional<?> checkStatusUser(String token) {
 
-        if (token != null && token.startsWith("Bearer ")) {
-            String tokenExtract = token.substring(7);
-            return jwtUtils.validateToken(tokenExtract);
+        String tokenExtract = jwtUtils.extractToken(token);
+
+        if (tokenExtract != null) {
+
+            if(jwtUtils.validateToken(tokenExtract)) {
+
+                String email = jwtUtils.getEmailFromToken(tokenExtract);
+                Optional<UserEntity> userExisting =  userRepository.findByUsername(email);
+
+                if(userExisting.isPresent()) {
+                    UserStatusDTO userStatusDTO = getUserStatusDTO(userExisting);
+                    return Optional.of(userStatusDTO);
+                }
+//                throw new IllegalArgumentException("User does not exist");
+            }
         }
         throw new IllegalArgumentException("Invalid token");
+    }
+
+    @Override
+    public boolean enabledToken(String token) {
+        return jwtUtils.validateToken(jwtUtils.extractToken(token));
+    }
+
+    private static UserStatusDTO getUserStatusDTO(Optional<UserEntity> userExisting) {
+
+        if(userExisting.isPresent()) {
+            UserEntity existingUserEntity = userExisting.get();
+
+            UserStatusDTO userStatusDTO = new UserStatusDTO();
+            userStatusDTO.setEnabled(existingUserEntity.isEnabled());
+            userStatusDTO.setAccountNonExpired(existingUserEntity.isAccountNonExpired());
+            userStatusDTO.setCredentialsNonExpired(existingUserEntity.isCredentialsNonExpired());
+            userStatusDTO.setAccountNonLocked(existingUserEntity.isAccountNonLocked());
+            return userStatusDTO;
+        }
+        throw new IllegalArgumentException("User does not exist");
     }
 
     /**

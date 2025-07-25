@@ -5,6 +5,7 @@ import net.hiddenpass.hiddenpass.models.AccessCodeEntity;
 import net.hiddenpass.hiddenpass.models.UserEntity;
 import net.hiddenpass.hiddenpass.responseDTO.ExistEmailDTO;
 import net.hiddenpass.hiddenpass.responseDTO.UpdateEmailUserDTO;
+import net.hiddenpass.hiddenpass.responseDTO.UserRegisterDTO;
 import net.hiddenpass.hiddenpass.security.jwt.JwtUtils;
 import net.hiddenpass.hiddenpass.service.KeyStoreService;
 import net.hiddenpass.hiddenpass.service.UserService;
@@ -46,8 +47,8 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<String> registerUser(@Valid @RequestBody UserEntity user) throws Exception {
-        if (userService.createUser(user).isPresent()) {
+    public ResponseEntity<String> registerUser(@Valid @RequestBody UserRegisterDTO registerDTO) throws Exception {
+        if (userService.createUser(registerDTO).isPresent()) {
             throw new IllegalArgumentException("User already exists");
         }
         return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
@@ -115,8 +116,8 @@ public class UserController {
 
     @GetMapping("/checktoken")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<Boolean> checkToken(@RequestHeader("Authorization") String token) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.enabledToken(token));
+    public ResponseEntity<Optional<?>> checkToken(@RequestHeader("Authorization") String token) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.checkStatusUser(token));
     }
 
     @PostMapping("/checkmail")

@@ -25,7 +25,7 @@ public class NoteEntity {
     private String content;
 
     @CreationTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
+//    @Temporal(TemporalType.TIMESTAMP)
     @Column( nullable = false, updatable = false)
     private Instant creationDateServer;
 

@@ -25,16 +25,16 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     //load user by username
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        UserEntity user = userRepository.findByUsername(email)
+        UserEntity userEntity = userRepository.findByUsername(email)
                 .orElseThrow(() -> new UsernameNotFoundException("user " + email + " not exist"));
 
-        Collection<? extends GrantedAuthority> authorities = user.getRoles()
+        Collection<? extends GrantedAuthority> authorities = userEntity.getRoles()
                 .stream()
                 .map( role -> new SimpleGrantedAuthority("ROLE_".concat(role.getRole().name())))
                 .collect(Collectors.toSet());
 
-        return new User(user.getUsername(),
-                user.getPassword(),
+        return new User(userEntity.getUsername(),
+                userEntity.getPassword(),
                 true,
                 true,
                 true,

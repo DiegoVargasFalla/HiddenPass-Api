@@ -2,9 +2,8 @@ package net.hiddenpass.hiddenpass.models;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
 
-import java.util.Base64;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
@@ -36,9 +35,36 @@ public class UserEntity{
     private List<NoteEntity> listNotes;
 
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST, orphanRemoval = true)
-    AccessCodeEntity accessCode;
-    String userSalt;
-    String  userIv;
+    private AccessCodeEntity accessCode;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    private PlanEntity plan;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @JsonManagedReference
+    private List<BuysEntity> buys;
+
+    private String userSalt;
+    private String  userIv;
+
+    // update in method crete user
+    //@Column(nullable = false)
+    private boolean accountNonExpired;
+
+    //@Column(nullable = false)
+    private boolean accountNonLocked;
+
+    //@Column(nullable = false)
+    private boolean credentialsNonExpired;
+
+    //@Column(nullable = false)
+    private boolean enabled;
+
+    //@Column(nullable = false)
+    private LocalDate creationDate;
+
+    //@Column(nullable = false)
+    private LocalDate lastAccessDate;
 
     public Long getId() {
         return id;
@@ -118,5 +144,69 @@ public class UserEntity{
 
     public void setListNotes(List<NoteEntity> listNotes) {
         this.listNotes = listNotes;
+    }
+
+    public boolean isAccountNonExpired() {
+        return accountNonExpired;
+    }
+
+    public void setAccountNonExpired(boolean accountNonExpired) {
+        this.accountNonExpired = accountNonExpired;
+    }
+
+    public boolean isAccountNonLocked() {
+        return accountNonLocked;
+    }
+
+    public void setAccountNonLocked(boolean accountNonLocked) {
+        this.accountNonLocked = accountNonLocked;
+    }
+
+    public boolean isCredentialsNonExpired() {
+        return credentialsNonExpired;
+    }
+
+    public void setCredentialsNonExpired(boolean credentialsNonExpired) {
+        this.credentialsNonExpired = credentialsNonExpired;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public LocalDate getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(LocalDate creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public LocalDate getLastAccessDate() {
+        return lastAccessDate;
+    }
+
+    public void setLastAccessDate(LocalDate lastAccessDate) {
+        this.lastAccessDate = lastAccessDate;
+    }
+
+    public PlanEntity getPlan() {
+        return plan;
+    }
+
+    public void setPlan(PlanEntity plan) {
+        this.plan = plan;
+    }
+
+    public List<BuysEntity> getBuys() {
+        return buys;
+    }
+
+    public void setBuys(List<BuysEntity> buys) {
+        this.buys = buys;
     }
 }

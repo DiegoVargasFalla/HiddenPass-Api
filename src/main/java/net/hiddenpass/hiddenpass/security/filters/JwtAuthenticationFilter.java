@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import net.hiddenpass.hiddenpass.models.UserEntity;
+import net.hiddenpass.hiddenpass.responseDTO.UserLoginDTO;
 import net.hiddenpass.hiddenpass.security.jwt.JwtUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -27,10 +28,11 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         this.jwtUtils = jwtUtils;
     }
 
-    private UserEntity parseUserEntity(HttpServletRequest request) {
+    private UserLoginDTO parseUserEntity(HttpServletRequest request) {
 
         try {
-            return new ObjectMapper().readValue(request.getInputStream(), UserEntity.class);
+            //mapping of user whit library jackson
+            return new ObjectMapper().readValue(request.getInputStream(), UserLoginDTO.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -38,12 +40,13 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        // #######  modify the access with encryption for username and password #####
-        UserEntity userEntity = parseUserEntity(request);
-        String email = userEntity.getUsername();
-        String masterKey = userEntity.getPassword();
 
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, masterKey);
+        // #######  modify the access with encryption for username and password #####
+        UserLoginDTO userLoginDTO = parseUserEntity(request);
+
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userLoginDTO.getUsername(), userLoginDTO.getPassword());
+
+        // this is when spring performs the user authentication
         return getAuthenticationManager().authenticate(authenticationToken);
     }
 
