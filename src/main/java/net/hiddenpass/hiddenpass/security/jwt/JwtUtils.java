@@ -23,7 +23,7 @@ public class JwtUtils {
     @Value("${jwt.time.expiration}")
     private String timeExpiration;
 
-    //generate token to the user access
+    // generate token to the user access
     public String generateToken(User user) {
         List<String> roles = user.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
@@ -57,13 +57,6 @@ public class JwtUtils {
         return getClaim(token, Claims::getSubject);
     }
 
-    public String extractToken(String allToken) {
-        if(allToken != null && allToken.startsWith("Bearer ")) {
-            return allToken.substring(7);
-        }
-        return null;
-    }
-
     //get one Claim
     public <T> T getClaim(String token, Function<Claims, T> claimsFunction) {
         Claims claims = getClaimsFromToken(token);
@@ -84,5 +77,12 @@ public class JwtUtils {
         byte[] keyBytes = secretKey.getBytes();
 
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    public String extractToken(String allToken) {
+        if(allToken != null && allToken.startsWith("Bearer ")) {
+            return allToken.substring(7);
+        }
+        return null;
     }
 }

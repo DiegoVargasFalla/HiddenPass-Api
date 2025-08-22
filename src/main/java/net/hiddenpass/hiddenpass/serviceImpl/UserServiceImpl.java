@@ -1,6 +1,5 @@
 package net.hiddenpass.hiddenpass.serviceImpl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import net.hiddenpass.hiddenpass.enumerations.ERol;
 import net.hiddenpass.hiddenpass.models.*;
 import net.hiddenpass.hiddenpass.repository.AccessCodeRepository;
@@ -13,7 +12,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.InputStream;
 import java.util.*;
 
 @Service
@@ -56,6 +54,8 @@ public class UserServiceImpl implements UserService {
     public Optional<UserEntity> getUser(String email) {
         return userRepository.findByUsername(email);
     }
+
+
 
     /**
      * create user with permission of USER or ADMIN,

@@ -2,10 +2,8 @@ package net.hiddenpass.hiddenpass.security.filters;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import net.hiddenpass.hiddenpass.models.UserEntity;
 import net.hiddenpass.hiddenpass.responseDTO.UserLoginDTO;
 import net.hiddenpass.hiddenpass.security.jwt.JwtUtils;
 import org.springframework.http.HttpStatus;
@@ -29,9 +27,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     }
 
     private UserLoginDTO parseUserEntity(HttpServletRequest request) {
-
         try {
-            //mapping of user whit library jackson
+            // mapping of user whit library jackson
             return new ObjectMapper().readValue(request.getInputStream(), UserLoginDTO.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -44,7 +41,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         // #######  modify the access with encryption for username and password #####
         UserLoginDTO userLoginDTO = parseUserEntity(request);
 
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userLoginDTO.getUsername(), userLoginDTO.getPassword());
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                userLoginDTO.getUsername(),
+                userLoginDTO.getPassword()
+        );
 
         // this is when spring performs the user authentication
         return getAuthenticationManager().authenticate(authenticationToken);
@@ -54,7 +54,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void successfulAuthentication(HttpServletRequest request,
                                             HttpServletResponse response,
                                             FilterChain chain,
-                                            Authentication authResult) throws IOException, ServletException {
+                                            Authentication authResult) throws IOException {
 
         User user = (User) authResult.getPrincipal();
         String token = jwtUtils.generateToken(user);
@@ -70,7 +70,5 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         response.setStatus(HttpStatus.OK.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.getWriter().flush();
-
-        super.successfulAuthentication(request, response, chain, authResult);
     }
 }

@@ -16,11 +16,11 @@ public class AccessCodeEntity {
     private Instant creationDate;
     private Instant expirationDate;
 
-   @OneToOne
+    @OneToOne
     private UserEntity creator;
 
-   @OneToOne
-   private UserEntity recipient;
+    @OneToOne
+    private UserEntity recipient;
 
 
     public Long getId() {
