@@ -3,6 +3,7 @@ package net.hiddenpass.hiddenpass.serviceImpl;
 import net.hiddenpass.hiddenpass.enumerations.ERol;
 import net.hiddenpass.hiddenpass.models.*;
 import net.hiddenpass.hiddenpass.repository.AccessCodeRepository;
+import net.hiddenpass.hiddenpass.repository.EventSubscriberRepository;
 import net.hiddenpass.hiddenpass.repository.UserRepository;
 import net.hiddenpass.hiddenpass.responseDTO.*;
 import net.hiddenpass.hiddenpass.security.jwt.JwtUtils;
@@ -22,18 +23,21 @@ public class UserServiceImpl implements UserService {
     private final JwtUtils jwtUtils;
     private final AccessCodeService accessCodeService;
     private final AccessCodeRepository accessCodeRepository;
+    private final EventSubscriberRepository eventSubscriberRepository;
 
     public UserServiceImpl(UserRepository userRepository,
                            PasswordEncoder passwordEncoder,
                            JwtUtils jwtUtils,
                            AccessCodeService accessCodeService,
-                           AccessCodeRepository accessCodeRepository) {
+                           AccessCodeRepository accessCodeRepository,
+                           EventSubscriberRepository eventSubscriberRepository) {
 
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtils = jwtUtils;
         this.accessCodeService = accessCodeService;
         this.accessCodeRepository = accessCodeRepository;
+        this.eventSubscriberRepository = eventSubscriberRepository;
     }
 
     /**
@@ -317,5 +321,16 @@ public class UserServiceImpl implements UserService {
             return ivAndSaltDTO;
         }
         throw new IllegalArgumentException("User not found");
+    }
+
+    @Override
+    public boolean subscribeUser(EventSubscriberDTO subscriberDTO) {
+        if(subscriberDTO.getEmail() != null) {
+            EventSubscriber eventSubscriber = new EventSubscriber();
+            eventSubscriber.setEmail(subscriberDTO.getEmail());
+            eventSubscriberRepository.save(eventSubscriber);
+            return true;
+        }
+        return false;
     }
 }
