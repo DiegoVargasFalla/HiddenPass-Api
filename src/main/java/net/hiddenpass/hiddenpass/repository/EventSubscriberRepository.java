@@ -1,4 +1,7 @@
 package net.hiddenpass.hiddenpass.repository;
 
-public interface EventSubscriberRepository {
+import net.hiddenpass.hiddenpass.models.EventSubscriber;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface EventSubscriberRepository extends JpaRepository<EventSubscriber, Long> {
 }

@@ -2,10 +2,7 @@ package net.hiddenpass.hiddenpass.service;
 
 import net.hiddenpass.hiddenpass.models.AccessCodeEntity;
 import net.hiddenpass.hiddenpass.models.UserEntity;
-import net.hiddenpass.hiddenpass.responseDTO.ExistEmailDTO;
-import net.hiddenpass.hiddenpass.responseDTO.IvAndSaltDTO;
-import net.hiddenpass.hiddenpass.responseDTO.UpdateEmailUserDTO;
-import net.hiddenpass.hiddenpass.responseDTO.UserRegisterDTO;
+import net.hiddenpass.hiddenpass.responseDTO.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,4 +22,5 @@ public interface UserService {
     AccessCodeEntity generateAccessCode();
     Boolean existEmail(ExistEmailDTO email);
     IvAndSaltDTO getIvAndSalt(String email);
+    boolean subscribeUser(EventSubscriberDTO subscriberDTO);
 }
