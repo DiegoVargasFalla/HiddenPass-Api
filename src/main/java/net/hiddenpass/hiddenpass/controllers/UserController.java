@@ -3,6 +3,7 @@ package net.hiddenpass.hiddenpass.controllers;
 import jakarta.validation.Valid;
 import net.hiddenpass.hiddenpass.models.AccessCodeEntity;
 import net.hiddenpass.hiddenpass.models.UserEntity;
+import net.hiddenpass.hiddenpass.responseDTO.EventSubscriberDTO;
 import net.hiddenpass.hiddenpass.responseDTO.ExistEmailDTO;
 import net.hiddenpass.hiddenpass.responseDTO.UpdateEmailUserDTO;
 import net.hiddenpass.hiddenpass.responseDTO.UserRegisterDTO;
@@ -130,6 +131,7 @@ public class UserController {
         //    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
         return ResponseEntity.status(HttpStatus.OK).body(keyStoreService.getPublicKey());
     }
+
     @GetMapping("/salt")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<?> getSalt(@RequestHeader("Authorization") String token) {
@@ -144,5 +146,13 @@ public class UserController {
         }
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+    @PostMapping("/subscriber")
+    public ResponseEntity<String> subscriber(@RequestBody EventSubscriberDTO eventSubscriberDTO) {
+        if(userService.subscribeUser(eventSubscriberDTO)) {
+            return ResponseEntity.status(HttpStatus.OK).body("User subscribed successfully");
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 }
