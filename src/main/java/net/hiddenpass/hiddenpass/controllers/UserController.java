@@ -3,10 +3,7 @@ package net.hiddenpass.hiddenpass.controllers;
 import jakarta.validation.Valid;
 import net.hiddenpass.hiddenpass.enumerations.ETypeUser;
 import net.hiddenpass.hiddenpass.models.UserEntity;
-import net.hiddenpass.hiddenpass.responseDTO.EventSubscriberDTO;
-import net.hiddenpass.hiddenpass.responseDTO.ExistEmailDTO;
-import net.hiddenpass.hiddenpass.responseDTO.UpdateEmailUserDTO;
-import net.hiddenpass.hiddenpass.responseDTO.UserRegisterDTO;
+import net.hiddenpass.hiddenpass.responseDTO.*;
 import net.hiddenpass.hiddenpass.security.jwt.JwtUtils;
 import net.hiddenpass.hiddenpass.service.KeyStoreService;
 import net.hiddenpass.hiddenpass.service.RegisterLinkService;
@@ -142,7 +139,7 @@ public class UserController {
 
     @GetMapping("/salt")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-    public ResponseEntity<?> getSalt(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<IvAndSaltDTO> getSalt(@RequestHeader("Authorization") String token) {
 
         if (token != null && token.startsWith("Bearer ")) {
             String tokenExtract = token.substring(7);
