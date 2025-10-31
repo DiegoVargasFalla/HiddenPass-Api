@@ -1,13 +1,14 @@
 package net.hiddenpass.hiddenpass.serviceImpl;
 
 import net.hiddenpass.hiddenpass.enumerations.ERol;
+import net.hiddenpass.hiddenpass.enumerations.ETypeUser;
 import net.hiddenpass.hiddenpass.models.*;
-import net.hiddenpass.hiddenpass.repository.AccessCodeRepository;
 import net.hiddenpass.hiddenpass.repository.EventSubscriberRepository;
+import net.hiddenpass.hiddenpass.repository.RoleRepository;
 import net.hiddenpass.hiddenpass.repository.UserRepository;
 import net.hiddenpass.hiddenpass.responseDTO.*;
 import net.hiddenpass.hiddenpass.security.jwt.JwtUtils;
-import net.hiddenpass.hiddenpass.service.AccessCodeService;
+import net.hiddenpass.hiddenpass.service.RegisterLinkService;
 import net.hiddenpass.hiddenpass.service.UserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,23 +22,20 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
-    private final AccessCodeService accessCodeService;
-    private final AccessCodeRepository accessCodeRepository;
     private final EventSubscriberRepository eventSubscriberRepository;
+    private final RoleRepository roleRepository;
 
     public UserServiceImpl(UserRepository userRepository,
                            PasswordEncoder passwordEncoder,
                            JwtUtils jwtUtils,
-                           AccessCodeService accessCodeService,
-                           AccessCodeRepository accessCodeRepository,
-                           EventSubscriberRepository eventSubscriberRepository) {
+                           EventSubscriberRepository eventSubscriberRepository,
+                           RoleRepository roleRepository) {
 
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtils = jwtUtils;
-        this.accessCodeService = accessCodeService;
-        this.accessCodeRepository = accessCodeRepository;
         this.eventSubscriberRepository = eventSubscriberRepository;
+        this.roleRepository = roleRepository;
     }
 
     /**
@@ -69,60 +67,41 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     @Transactional
-    public Optional<UserEntity> createUser(UserRegisterDTO registerDTO) {
+    public Optional<UserEntity> createUser(UserRegisterDTO registerDTO, ETypeUser typeUser) {
 
-        RoleEntity roleEntity = new RoleEntity();
-        Set<RoleEntity> roles = new HashSet<>();
+        if(typeUser == ETypeUser.USER) {
+            Optional<UserEntity> user = userRepository.findByUsername(registerDTO.getUsername());
+            if(user.isPresent()) {
+                UserEntity userEntity = user.get();
 
-        UserEntity user = new UserEntity();
-        user.setName(registerDTO.getName());
-        user.setUsername(registerDTO.getUsername());
-        user.setPassword(registerDTO.getPassword());
-        user.setUserIv(registerDTO.getUserIv());
-        user.setUserSalt(registerDTO.getUserSalt());
-
-
-        Optional<UserEntity> userExisting = userRepository.findByUsername(user.getUsername());
-
-        if (userExisting.isPresent()) {
-            throw new IllegalArgumentException("User already exists");
-        } else if (user.getAccessCode() != null) {
-            Long code = user.getAccessCode().getId();
-
-            Optional<AccessCodeEntity> accessCodeEntityOptional = accessCodeRepository.findById(code);
-            if (accessCodeEntityOptional.isPresent()) {
-
-                AccessCodeEntity accessCodeEntity = accessCodeEntityOptional.get();
-                if (accessCodeEntity.getActive()) {
-                    accessCodeEntity.setActive(false);
-                    accessCodeEntity.setRecipient(user);
-
-                    roleEntity.setRole(ERol.ADMIN);
+                Optional<RoleEntity> roleExisting = roleRepository.findByRole(ERol.USER);
+                if(roleExisting.isPresent()) {
+                    RoleEntity roleEntity = roleExisting.get();
+                    Set<RoleEntity> roles = new HashSet<>();
                     roles.add(roleEntity);
-                    user.setRoles(roles);
 
-                    user.setPassword(passwordEncoder.encode(user.getPassword()));
-                    user.setUserSalt(user.getUserSalt());
-                    user.setUserIv(user.getUserIv());
+                    userEntity.setRoles(roles);
+                    userEntity.setName(registerDTO.getName());
+                    userEntity.setUsername(registerDTO.getUsername());
+                    userEntity.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
+                    userEntity.setUserIv(registerDTO.getUserIv());
+                    userEntity.setUserSalt(registerDTO.getUserSalt());
 
-                    this.userRepository.save(user);
+                    userEntity.setAccountNonExpired(true);
+                    userEntity.setAccountNonLocked(true);
+                    userEntity.setCredentialsNonExpired(true);
+                    userEntity.setEnabled(true);
 
-                    return Optional.empty();
+                    userRepository.save(userEntity);
                 }
-                else {
-                    throw new IllegalArgumentException("Access code is inactive");
-                }
+            } else {
+                UserEntity userTemp = new UserEntity();
+                userTemp.setUsername(registerDTO.getUsername());
+                userTemp.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
+                userRepository.save(userTemp);
+                return Optional.of(userTemp);
             }
-
-        } else if (user.getAccessCode() == null) {
-            roleEntity.setRole(ERol.USER);
-            roles.add(roleEntity);
-            user.setRoles(roles);
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-            user.setUserSalt(user.getUserSalt());
-            user.setUserIv(user.getUserIv());
-
-            this.userRepository.save(user);
+        } else if (typeUser == ETypeUser.COMPANY) {
             return Optional.empty();
         }
         return Optional.empty();
@@ -285,15 +264,6 @@ public class UserServiceImpl implements UserService {
             return userStatusDTO;
         }
         throw new IllegalArgumentException("User does not exist");
-    }
-
-    /**
-     * generate access code to create a user with permissions of ADMIN
-     * @return access code
-     */
-    @Override
-    public AccessCodeEntity generateAccessCode() {
-        return accessCodeService.generateAccessCode();
     }
 
     /**

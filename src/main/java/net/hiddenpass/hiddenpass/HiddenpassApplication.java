@@ -9,4 +9,6 @@ public class HiddenpassApplication {
     public static void main(String[] args) {
         SpringApplication.run(HiddenpassApplication.class, args);
     }
+
+
 }

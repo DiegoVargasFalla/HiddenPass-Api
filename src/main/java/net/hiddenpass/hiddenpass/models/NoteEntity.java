@@ -40,6 +40,8 @@ public class NoteEntity {
     @JsonBackReference
     private UserEntity user;
 
+    public NoteEntity() {
+    }
 
     public Long getId() {
         return id;

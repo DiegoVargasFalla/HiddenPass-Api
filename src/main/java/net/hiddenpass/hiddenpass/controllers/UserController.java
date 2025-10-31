@@ -1,7 +1,7 @@
 package net.hiddenpass.hiddenpass.controllers;
 
 import jakarta.validation.Valid;
-import net.hiddenpass.hiddenpass.models.AccessCodeEntity;
+import net.hiddenpass.hiddenpass.enumerations.ETypeUser;
 import net.hiddenpass.hiddenpass.models.UserEntity;
 import net.hiddenpass.hiddenpass.responseDTO.EventSubscriberDTO;
 import net.hiddenpass.hiddenpass.responseDTO.ExistEmailDTO;
@@ -9,6 +9,7 @@ import net.hiddenpass.hiddenpass.responseDTO.UpdateEmailUserDTO;
 import net.hiddenpass.hiddenpass.responseDTO.UserRegisterDTO;
 import net.hiddenpass.hiddenpass.security.jwt.JwtUtils;
 import net.hiddenpass.hiddenpass.service.KeyStoreService;
+import net.hiddenpass.hiddenpass.service.RegisterLinkService;
 import net.hiddenpass.hiddenpass.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,11 +26,13 @@ public class UserController {
     private final UserService userService;
     private final JwtUtils jwtUtils;
     private final KeyStoreService keyStoreService;
+    private final RegisterLinkService registerLinkService;
 
-    public UserController(UserService userService, JwtUtils jwtUtils, KeyStoreService keyStoreService) {
+    public UserController(UserService userService, JwtUtils jwtUtils, KeyStoreService keyStoreService, RegisterLinkService registerLinkService) {
         this.userService = userService;
         this.jwtUtils = jwtUtils;
         this.keyStoreService = keyStoreService;
+        this.registerLinkService = registerLinkService;
     }
 
     //This endpoint only access to rol [ADMIN].
@@ -49,7 +52,7 @@ public class UserController {
 
     @PostMapping("/create")
     public ResponseEntity<String> registerUser(@Valid @RequestBody UserRegisterDTO registerDTO) throws Exception {
-        if (userService.createUser(registerDTO).isPresent()) {
+        if (userService.createUser(registerDTO, ETypeUser.USER).isPresent()) {
             throw new IllegalArgumentException("User already exists");
         }
         return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
@@ -72,7 +75,7 @@ public class UserController {
     //¡¡¡¡¡IMPORTANT CORRECT !!!!!!!
     //change Pathvariable to RequestBody DTO
     // This endpoint only access to rol [ADMIN]
-    @DeleteMapping("delete-user/{email}")
+    @DeleteMapping("/delete-user/{email}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deleteUser(@Valid @PathVariable String email) {
         if (userService.deleteUser(email)) {
@@ -108,17 +111,22 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.enabledToken(token));
     }
 
-    //this method access only admin
-    @GetMapping("/generate-access")
-    @PreAuthorize("hasAnyRole('ADMIN')")
-    public ResponseEntity<AccessCodeEntity> generateAccess() {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.generateAccessCode());
-    }
-
     @GetMapping("/checktoken")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<Optional<?>> checkToken(@RequestHeader("Authorization") String token) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.checkStatusUser(token));
+    }
+
+    @GetMapping("/generate-register-token/{email}")
+    public ResponseEntity<String> generateAccessToken(@PathVariable String email) throws Exception {
+        registerLinkService.generateAccessToken(email, 60000L);
+        return ResponseEntity.status(HttpStatus.OK).body("Register link generated successfully");
+    }
+
+    @GetMapping("/check-register-token")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'COMPANY', 'USER')")
+    public ResponseEntity<Boolean> checkRegisterToken(@RequestHeader("Authorization") String token) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.enabledToken(token));
     }
 
     @PostMapping("/checkmail")

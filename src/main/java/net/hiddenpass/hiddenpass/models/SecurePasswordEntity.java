@@ -14,6 +14,9 @@ public class SecurePasswordEntity {
         this.guesses = guesses;
     }
 
+    public SecurePasswordEntity() {
+    }
+
     public double getEntropy() {
         return entropy;
     }

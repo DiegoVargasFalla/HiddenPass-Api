@@ -29,6 +29,9 @@ public class PlanEntity {
 
     private LocalDate creationDate;
 
+    public PlanEntity() {
+    }
+
     public Long getId() {
         return id;
     }

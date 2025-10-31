@@ -1,7 +1,11 @@
 package net.hiddenpass.hiddenpass.enumerations;
 
 public enum ERol {
-
-    ADMIN,
     USER,
+    SUPER_ADMIN,
+    ADMIN,
+    ADMIN_COMPANY,
+    INDIVIDUAL,
+    EMPLOYEE,
+
 }

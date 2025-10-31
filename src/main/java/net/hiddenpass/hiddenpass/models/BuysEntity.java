@@ -23,6 +23,9 @@ public class BuysEntity {
     @JsonBackReference
     private UserEntity user;
 
+    public BuysEntity() {
+    }
+
     public Long getId() {
         return id;
     }

@@ -34,9 +34,6 @@ public class UserEntity{
     @JsonManagedReference
     private List<NoteEntity> listNotes;
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST, orphanRemoval = true)
-    private AccessCodeEntity accessCode;
-
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private PlanEntity plan;
 
@@ -65,6 +62,9 @@ public class UserEntity{
 
     //@Column(nullable = false)
     private LocalDate lastAccessDate;
+
+    public UserEntity() {
+    }
 
     public Long getId() {
         return id;
@@ -112,14 +112,6 @@ public class UserEntity{
 
     public void setRoles(Set<RoleEntity> roles) {
         this.roles = roles;
-    }
-
-    public AccessCodeEntity getAccessCode() {
-        return accessCode;
-    }
-
-    public void setAccessCode(AccessCodeEntity accessCode) {
-        this.accessCode = accessCode;
     }
 
     public String getUserSalt() {

@@ -20,6 +20,9 @@ public class EventSubscriber {
     @CreationTimestamp
     private Instant timestamp;
 
+    public EventSubscriber() {
+    }
+
     public Long getId() {
         return id;
     }

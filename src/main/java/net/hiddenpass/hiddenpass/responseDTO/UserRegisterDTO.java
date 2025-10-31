@@ -1,11 +1,8 @@
 package net.hiddenpass.hiddenpass.responseDTO;
 
-import net.hiddenpass.hiddenpass.models.AccessCodeEntity;
-
 public class UserRegisterDTO {
     private String name;
     private String username;
-    private AccessCodeEntity accessCode;
     private String password;
     private String userSalt;
     private String userIv;
@@ -25,14 +22,6 @@ public class UserRegisterDTO {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public AccessCodeEntity getAccessCode() {
-        return accessCode;
-    }
-
-    public void setAccessCode(AccessCodeEntity accessCode) {
-        this.accessCode = accessCode;
     }
 
     public String getPassword() {

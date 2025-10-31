@@ -14,6 +14,9 @@ public class RoleEntity {
     @Enumerated(EnumType.STRING)
     private ERol role;
 
+    public RoleEntity() {
+    }
+
     public int getId() {
         return id;
     }
