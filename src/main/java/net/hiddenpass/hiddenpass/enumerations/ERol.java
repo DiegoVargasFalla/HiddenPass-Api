@@ -7,5 +7,4 @@ public enum ERol {
     ADMIN_COMPANY,
     INDIVIDUAL,
     EMPLOYEE,
-
 }

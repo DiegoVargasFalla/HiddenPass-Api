@@ -14,6 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.*;
 
 @Service
@@ -71,10 +73,11 @@ public class UserServiceImpl implements UserService {
 
         if(typeUser == ETypeUser.USER) {
             Optional<UserEntity> user = userRepository.findByUsername(registerDTO.getUsername());
+            Optional<RoleEntity> roleExisting = roleRepository.findByRole(ERol.USER);
+
             if(user.isPresent()) {
                 UserEntity userEntity = user.get();
 
-                Optional<RoleEntity> roleExisting = roleRepository.findByRole(ERol.USER);
                 if(roleExisting.isPresent()) {
                     RoleEntity roleEntity = roleExisting.get();
                     Set<RoleEntity> roles = new HashSet<>();
@@ -86,6 +89,7 @@ public class UserServiceImpl implements UserService {
                     userEntity.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
                     userEntity.setUserIv(registerDTO.getUserIv());
                     userEntity.setUserSalt(registerDTO.getUserSalt());
+                    userEntity.setCreationDate(LocalDate.now());
 
                     userEntity.setAccountNonExpired(true);
                     userEntity.setAccountNonLocked(true);
@@ -95,11 +99,23 @@ public class UserServiceImpl implements UserService {
                     userRepository.save(userEntity);
                 }
             } else {
-                UserEntity userTemp = new UserEntity();
-                userTemp.setUsername(registerDTO.getUsername());
-                userTemp.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
-                userRepository.save(userTemp);
-                return Optional.of(userTemp);
+                if(roleExisting.isPresent()) {
+                    RoleEntity roleEntity = roleExisting.get();
+                    Set<RoleEntity> roles = new HashSet<>();
+                    roles.add(roleEntity);
+
+                    UserEntity userTemp = new UserEntity();
+                    userTemp.setUsername(registerDTO.getUsername());
+                    userTemp.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
+                    userTemp.setAccountNonExpired(true);
+                    userTemp.setAccountNonLocked(true);
+                    userTemp.setCredentialsNonExpired(true);
+                    userTemp.setEnabled(true);
+
+                    userTemp.setRoles(roles);
+                    userRepository.save(userTemp);
+                    return Optional.of(userTemp);
+                }
             }
         } else if (typeUser == ETypeUser.COMPANY) {
             return Optional.empty();

@@ -116,12 +116,12 @@ public class UserController {
 
     @GetMapping("/generate-register-token/{email}")
     public ResponseEntity<String> generateAccessToken(@PathVariable String email) throws Exception {
-        registerLinkService.generateAccessToken(email, 60000L);
+        registerLinkService.generateAccessToken(email, 900000L);
         return ResponseEntity.status(HttpStatus.OK).body("Register link generated successfully");
     }
 
     @GetMapping("/check-register-token")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'COMPANY', 'USER')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'ADMIN_COMPANY', 'USER')")
     public ResponseEntity<Boolean> checkRegisterToken(@RequestHeader("Authorization") String token) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.enabledToken(token));
     }

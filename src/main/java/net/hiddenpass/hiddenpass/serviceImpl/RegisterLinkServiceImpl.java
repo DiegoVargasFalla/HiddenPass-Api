@@ -2,6 +2,8 @@ package net.hiddenpass.hiddenpass.serviceImpl;
 
 import jakarta.mail.MessagingException;
 import net.hiddenpass.hiddenpass.enumerations.ETypeUser;
+import net.hiddenpass.hiddenpass.models.RoleEntity;
+import net.hiddenpass.hiddenpass.repository.RoleRepository;
 import net.hiddenpass.hiddenpass.responseDTO.UserRegisterDTO;
 import net.hiddenpass.hiddenpass.security.jwt.JwtUtils;
 import net.hiddenpass.hiddenpass.service.RegisterLinkService;
@@ -9,6 +11,8 @@ import net.hiddenpass.hiddenpass.service.UserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -28,6 +32,7 @@ public class RegisterLinkServiceImpl implements RegisterLinkService {
      */
     @Override
     public void generateAccessToken(String email, Long expirationTime) throws Exception {
+
         UserRegisterDTO registerDTO = new UserRegisterDTO();
         registerDTO.setUsername(email);
         registerDTO.setPassword("tempPassword");

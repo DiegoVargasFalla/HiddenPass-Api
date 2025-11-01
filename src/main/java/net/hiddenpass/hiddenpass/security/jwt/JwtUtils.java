@@ -4,15 +4,18 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import net.hiddenpass.hiddenpass.models.RoleEntity;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
+import javax.management.relation.Role;
 import java.security.Key;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 
 @Component
@@ -40,10 +43,9 @@ public class JwtUtils {
     }
 
     public String generateAccessToken(String email, Long expirationTime) {
-
         List<String> roles = new ArrayList<>();
-        roles.add("USER");
-        roles.add("COMPANY");
+        roles.add("ROLE_USER");
+        roles.add("ROLE_ADMIN_COMPANY");
 
         return Jwts.builder()
                 .setSubject(email)
