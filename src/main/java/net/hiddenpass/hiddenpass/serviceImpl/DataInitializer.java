@@ -11,6 +11,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -57,9 +59,9 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         if(!userRepository.existsByUsername(mail)) {
-            Optional<RoleEntity> role = roleRepository.findByRole(ERol.SUPER_ADMIN);
-            if(role.isPresent()) {
-                RoleEntity roleSuperAdmin = new RoleEntity();
+            Optional<RoleEntity> roleExisting = roleRepository.findByRole(ERol.SUPER_ADMIN);
+            if(roleExisting.isPresent()) {
+                RoleEntity role = roleExisting.get();
 
                 Set<RoleEntity> roles = new HashSet<>();
 
@@ -71,9 +73,9 @@ public class DataInitializer implements CommandLineRunner {
                 user.setAccountNonLocked(true);
                 user.setCredentialsNonExpired(true);
                 user.setEnabled(true);
+                user.setCreationDate(LocalDate.now());
 
-                roleSuperAdmin.setRole(ERol.ADMIN);
-                roles.add(roleSuperAdmin);
+                roles.add(role);
                 user.setRoles(roles);
                 userRepository.save(user);
             }
