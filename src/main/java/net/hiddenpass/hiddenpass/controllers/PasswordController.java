@@ -33,7 +33,7 @@ public class PasswordController {
      */
     //This method access [ADMIN]
     @GetMapping("/passwords")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     public ResponseEntity<List<PassWordEntity>> getAllPasswords() {
         return ResponseEntity.status(HttpStatus.OK).body(passwordService.getPassWords());
     }
@@ -45,7 +45,7 @@ public class PasswordController {
      */
     //This method access [ADMIN]
     @GetMapping("/password/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     public ResponseEntity<Optional<PassWordEntity>> getPassword(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(passwordService.getPassWord(id));
     }
@@ -57,7 +57,7 @@ public class PasswordController {
      * @return password created
      */
     @PostMapping("/add-password")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'SUPER_ADMIN')")
     public ResponseEntity<?> createPassword(@RequestHeader("Authorization") String token, @RequestBody PasswordResponseDTO passwordResponseDTO) throws Exception{
         String username = userService.getUsernameFromToken(token);
         if (username == null) {
@@ -73,7 +73,7 @@ public class PasswordController {
      * @return response status OK
      */
     @DeleteMapping("/delete-password")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'SUPER_ADMIN')")
     public ResponseEntity<?> deletePassword( @RequestHeader("Authorization") String token, @Valid @RequestBody DeleteIdPasswordFromUserDTO deleteIdPasswordFromUser) {
 
         String emailUser = userService.getUsernameFromToken(token);
@@ -89,7 +89,7 @@ public class PasswordController {
      * @return object PasswordEntity
      */
     @PostMapping("/passwords-user")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'SUPER_ADMIN')")
     //change the arriving email attribute in the token
     public ResponseEntity<?> getPasswordsUser(@RequestHeader("Authorization") String token) throws Exception{
         String userEmail = userService.getUsernameFromToken(token);
@@ -108,7 +108,7 @@ public class PasswordController {
      * @return Object PasswordEntity or error
      */
     @PatchMapping("/update-password")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'SUPER_ADMIN')")
     public ResponseEntity<?> updatePassword(@RequestHeader("Authorization") String token, @RequestBody PasswordResponseDTO passwordResponseDTO) throws Exception {
 
         String userEmail = userService.getUsernameFromToken(token);
@@ -125,7 +125,7 @@ public class PasswordController {
      * feedback and how many attempts are needed to crack the password
      */
     @PostMapping("/check-password")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'SUPER_ADMIN')")
     public ResponseEntity<?> checkPassword(@Valid @RequestBody SecurePasswordDTO securePasswordDTO) {
         Optional<SecurePasswordEntity> securePasswordExisting = passwordService.checkSecurePassword(securePasswordDTO);
         if (securePasswordExisting.isPresent()) {
@@ -140,7 +140,7 @@ public class PasswordController {
      * @return secure password
      */
     @GetMapping("/generate-password")
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'SUPER_ADMIN')")
     public ResponseEntity<String> generatePassword() {
         return ResponseEntity.status(HttpStatus.OK).body(passwordService.generateSecurePassword());
     }

@@ -103,13 +103,13 @@ public class UserController {
 
     //method to check if token is enabled
     @GetMapping("/enabled-token")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'SUPER_ADMIN')")
     public ResponseEntity<Boolean> enabledToken(@RequestHeader("Authorization") String token) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.enabledToken(token));
     }
 
     @GetMapping("/checktoken")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'SUPER_ADMIN')")
     public ResponseEntity<Optional<?>> checkToken(@RequestHeader("Authorization") String token) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.checkStatusUser(token));
     }
@@ -138,7 +138,7 @@ public class UserController {
     }
 
     @GetMapping("/salt")
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'SUPER_ADMIN')")
     public ResponseEntity<IvAndSaltDTO> getSalt(@RequestHeader("Authorization") String token) {
 
         if (token != null && token.startsWith("Bearer ")) {
