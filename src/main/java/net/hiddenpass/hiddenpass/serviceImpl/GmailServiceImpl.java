@@ -30,7 +30,7 @@ public class GmailServiceImpl implements GmailService {
         mimeMessage.setRecipients(MimeMessage.RecipientType.TO, InternetAddress.parse(to));
         mimeMessage.setSubject(subject);
 
-        ClassPathResource resource = new ClassPathResource("static/index.html");
+        ClassPathResource resource = new ClassPathResource("/static/index.html", getClass().getClassLoader());
 
         try(InputStream in = resource.getInputStream()) {
             String html = new String(in.readAllBytes(), StandardCharsets.UTF_8);

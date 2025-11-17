@@ -27,7 +27,7 @@ public class NoteController {
     }
 
     @PostMapping("/add-note")
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'SUPER_ADMIN')")
     public ResponseEntity<Optional<NoteEntity>> CreateNote(@RequestBody NoteEntityDTO noteEntityDTO, @RequestHeader("Authorization") String token) throws Exception{
         String email = userService.getUsernameFromToken(token);
 
@@ -40,7 +40,7 @@ public class NoteController {
     }
 
     @PostMapping("/notes-user")
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'SUPER_ADMIN')")
     public ResponseEntity<List<NoteEntity>> getUserNotes(@RequestHeader("Authorization") String token) throws Exception{
         String email = userService.getUsernameFromToken(token);
 
@@ -51,7 +51,7 @@ public class NoteController {
     }
 
     @PatchMapping("/update-note")
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'SUPER_ADMIN')")
     public ResponseEntity<?> updateNote(@RequestHeader("Authorization") String token, @Valid @RequestBody  NoteEntityDTO noteEntityDTO) throws Exception {
         String email = userService.getUsernameFromToken(token);
 
@@ -62,7 +62,7 @@ public class NoteController {
     }
 
     @DeleteMapping("/delete-note")
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'SUPER_ADMIN')")
     public ResponseEntity<?> deleteNote(@RequestHeader("Authorization") String token, @Valid @RequestBody DeleteNoteDTO deleteNoteDTO) {
         String email = userService.getUsernameFromToken(token);
 

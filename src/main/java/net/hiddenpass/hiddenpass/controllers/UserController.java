@@ -57,7 +57,7 @@ public class UserController {
 
     //This endpoint only access to rol [USER, ADMIN].
     @PatchMapping("/update-user")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'SUPER_ADMIN')")
     public ResponseEntity<Optional<UserEntity>> updateUser( @RequestBody UserEntity user) {
 
         Optional<UserEntity> userEntity = this.userService.updateUser(user);
@@ -73,7 +73,7 @@ public class UserController {
     //change Pathvariable to RequestBody DTO
     // This endpoint only access to rol [ADMIN]
     @DeleteMapping("/delete-user/{email}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     public ResponseEntity<String> deleteUser(@Valid @PathVariable String email) {
         if (userService.deleteUser(email)) {
             return ResponseEntity.status(HttpStatus.OK).body("User deleted successfully");
@@ -85,7 +85,7 @@ public class UserController {
     //receive the email in token
     //The email here is the subject in the token
     @PatchMapping("/update-email")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'SUPER_ADMIN')")
     public ResponseEntity<?> updateUserEmail(@Valid @RequestBody UpdateEmailUserDTO updateEmailUserDTO, @RequestHeader("Authorization") String token) {
 
         if (jwtUtils.validateToken(token)) {
@@ -138,7 +138,7 @@ public class UserController {
     }
 
     @GetMapping("/salt")
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'SUPER_ADMI')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'SUPER_ADMIN')")
     public ResponseEntity<IvAndSaltDTO> getSalt(@RequestHeader("Authorization") String token) {
 
         if (token != null && token.startsWith("Bearer ")) {
