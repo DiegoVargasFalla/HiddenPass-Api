@@ -138,7 +138,7 @@ public class UserController {
     }
 
     @GetMapping("/salt")
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'SUPER_ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'SUPER_ADMI')")
     public ResponseEntity<IvAndSaltDTO> getSalt(@RequestHeader("Authorization") String token) {
 
         if (token != null && token.startsWith("Bearer ")) {
