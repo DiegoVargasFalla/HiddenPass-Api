@@ -44,7 +44,7 @@ public class RegisterLinkServiceImpl implements RegisterLinkService {
                 gmailServiceImpl.sendMail(
                         email,
                         "Link de registro",
-                        "http://localhost:5173/register?token=" + jwtUtils.generateAccessToken(email, expirationTime)
+                        "https://hiddenpass.net/register?token=" + jwtUtils.generateAccessToken(email, expirationTime)
                 );
             } catch (MessagingException e) {
                 throw new RuntimeException(e);
